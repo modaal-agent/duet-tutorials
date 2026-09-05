@@ -93,7 +93,7 @@ jobs:
       - name: Restore the Kotlin/Native toolchain
         if: steps.umbrella.outputs.present == 'true'
         id: konan
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ hashFiles(format('{0}/src-kmp/gradle/libs.versions.toml', matrix.tree)) }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Save the Kotlin/Native toolchain
         if: steps.umbrella.outputs.present == 'true' && (success() || failure()) && steps.konan.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ hashFiles(format('{0}/src-kmp/gradle/libs.versions.toml', matrix.tree)) }}
