@@ -1,0 +1,16 @@
+# Keeps the workflow actions and the trees' Gradle dependencies current.
+# Family packages (dev.modaal.*) move by the deliberate re-pin commit that
+# edits pins.env, so their versions are ignored here.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: gradle
+    directories:
+      - "/tutorial*-*/src-kmp"
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "dev.modaal*"

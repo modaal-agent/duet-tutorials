@@ -1,0 +1,18 @@
+# Gradle / JVM
+.gradle/
+build/
+local.properties
+.kotlin/
+
+# Swift / Xcode
+.build/
+DerivedData/
+*.xcodeproj
+*.xcuserdata/
+
+# Duet toolchain
+parity/.runs/
+.duet-family/
+
+# OS
+.DS_Store

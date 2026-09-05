@@ -1,0 +1,17 @@
+# The feature-parity manifest. Every feature declares its one commonMain
+# implementation, the scenario its fixtures are compiled from (fixtures are
+# build products of `tools/duet record` — never edited by hand), and the
+# fixtures that pin its behavior. The `duet` CLI is this file's only parser
+# (grammar: the toolchain's contracts/manifest.md); unknown top-level keys are
+# an error, and the indentation shape is part of the grammar.
+#
+# `features:` is present and empty: the meta-checks pass on it with a note,
+# and every lane is vacuous until the first entry lands.
+
+features:
+
+chains:
+
+presentation:
+  waivers: []
+  islands: []

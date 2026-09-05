@@ -1,0 +1,134 @@
+# The tree matrix: one job per tree, running scripts/run-tree.sh — the same
+# command a contributor runs locally. On a pull request only the trees whose
+# paths changed run (a change to pins.env, scripts/ or the workflows selects
+# every tree); on main, nightly and on demand every tree runs.
+#
+# Two lanes per tree. macOS carries the toolchain gates, the Apple boundary
+# lane and the iOS app build; ubuntu carries the Android app, because the
+# hosted ubuntu image ships the Android SDK and the macOS image does not.
+name: trees
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      scope:
+        description: "changed (the trees a pull request touched) or all"
+        type: string
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trees-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      trees: ${{ steps.plan.outputs.trees }}
+      android: ${{ steps.plan.outputs.android }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: pins agree
+        run: scripts/check-pins.sh
+      - name: which trees run
+        id: plan
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ inputs.scope || 'changed' }}" = "changed" ]; then
+            plan="$(scripts/plan-trees.sh changed "origin/${{ github.base_ref }}")"
+          else
+            plan="$(scripts/plan-trees.sh all)"
+          fi
+          echo "$plan"
+          echo "trees=$(echo "$plan" | jq -c .trees)" >> "$GITHUB_OUTPUT"
+          echo "android=$(echo "$plan" | jq -c .android)" >> "$GITHUB_OUTPUT"
+
+  macos:
+    needs: plan
+    if: needs.plan.outputs.trees != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        tree: ${{ fromJson(needs.plan.outputs.trees) }}
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      # The floor the family's packages are verified against; the runner's
+      # default toolchain is older.
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.6"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      # The Kotlin/Native toolchain is a several-hundred-MB download, needed
+      # only by trees that assemble the Apple framework. Keyed on the tree's
+      # version catalog; saved explicitly so a red lane still leaves the next
+      # run warm.
+      - name: What does this tree carry?
+        id: umbrella
+        run: |
+          if [ -d "${{ matrix.tree }}/src-kmp/apple-umbrella" ]; then present=true; else present=false; fi
+          if [ -f "${{ matrix.tree }}/src-ios/App/xcodegen.yml" ]; then ios=true; else ios=false; fi
+          echo "present=$present" >> "$GITHUB_OUTPUT"
+          echo "ios=$ios" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the Kotlin/Native toolchain
+        if: steps.umbrella.outputs.present == 'true'
+        id: konan
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles(format('{0}/src-kmp/gradle/libs.versions.toml', matrix.tree)) }}
+          restore-keys: |
+            konan-${{ runner.os }}-
+
+      - name: xcodegen
+        if: steps.umbrella.outputs.ios == 'true'
+        run: brew install xcodegen
+
+      - name: run-tree (macos lane)
+        run: scripts/run-tree.sh "${{ matrix.tree }}" --lane macos
+
+      - name: Save the Kotlin/Native toolchain
+        if: steps.umbrella.outputs.present == 'true' && (success() || failure()) && steps.konan.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles(format('{0}/src-kmp/gradle/libs.versions.toml', matrix.tree)) }}
+
+  android:
+    needs: plan
+    if: needs.plan.outputs.android != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        tree: ${{ fromJson(needs.plan.outputs.android) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: run-tree (android lane)
+        run: scripts/run-tree.sh "${{ matrix.tree }}" --lane android

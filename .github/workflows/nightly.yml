@@ -1,0 +1,45 @@
+# Nightly: every tree through the matrix, then the mutation drill on the tree
+# that carries parity/mutations.json. The drill runs here and not per push
+# because each mutation row is a full lane run.
+name: nightly
+
+on:
+  schedule:
+    # UTC.
+    - cron: "15 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trees:
+    uses: ./.github/workflows/trees.yml
+    with:
+      scope: all
+
+  mutate:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - name: Is the mutation tree on the tree yet?
+        id: tree
+        run: |
+          if [ -f tutorial6-complete/parity/mutations.json ]; then present=true; else present=false; fi
+          echo "present=$present" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v5
+        if: steps.tree.outputs.present == 'true'
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v5
+        if: steps.tree.outputs.present == 'true'
+      - name: tools/duet mutate
+        if: steps.tree.outputs.present == 'true'
+        run: |
+          cd tutorial6-complete
+          tools/duet mutate
+      - name: held
+        if: steps.tree.outputs.present != 'true'
+        run: echo "tutorial6-complete carries no parity/mutations.json yet — the drill is held"

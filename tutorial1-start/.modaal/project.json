@@ -1,0 +1,10 @@
+{
+  "template": "duet-kmp",
+  "targets": {},
+  "duet": {
+    "template": "duet-kmp",
+    "flavor": "kmp",
+    "projectName": "Foyer",
+    "kotlinPackage": "dev.modaal.foyer"
+  }
+}
