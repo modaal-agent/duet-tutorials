@@ -76,7 +76,7 @@ jobs:
           distribution: temurin
           java-version: "25"
 
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
 
       # The Kotlin/Native toolchain is a several-hundred-MB download, needed
       # only by trees that assemble the Apple framework. Keyed on the tree's
@@ -129,6 +129,6 @@ jobs:
         with:
           distribution: temurin
           java-version: "25"
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: run-tree (android lane)
         run: scripts/run-tree.sh "${{ matrix.tree }}" --lane android

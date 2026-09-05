@@ -33,7 +33,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "25"
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
         if: steps.tree.outputs.present == 'true'
       - name: tools/duet mutate
         if: steps.tree.outputs.present == 'true'
