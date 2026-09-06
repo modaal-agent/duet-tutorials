@@ -22,11 +22,14 @@ if [[ "$mode" == "all" ]]; then
 else
   [[ -n "$base" ]] || { echo "plan-trees: changed needs a base ref" >&2; exit 2; }
   changed="$(git -C "$ROOT" diff --name-only "$base"...HEAD)"
-  if echo "$changed" | grep -qE '^(pins\.env|scripts/|\.github/)'; then
+  # Here-strings, not `echo | grep -q`: grep -q exits at the first match and
+  # closes the pipe, and under pipefail the writer's SIGPIPE then fails the
+  # test, so a long change list dropped trees that had changed.
+  if grep -qE '^(pins\.env|scripts/|\.github/)' <<<"$changed"; then
     selected=("${all[@]}")
   else
     for t in "${all[@]}"; do
-      if echo "$changed" | grep -q "^$t/"; then selected+=("$t"); fi
+      if grep -q "^$t/" <<<"$changed"; then selected+=("$t"); fi
     done
   fi
 fi
