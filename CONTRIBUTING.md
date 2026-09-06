@@ -17,10 +17,14 @@ The rules every family repository holds, and this repository's own two.
   tutorial exists. Prose before code; a milestone is stated as what now
   passes, not celebrated.
 - **Test doubles never live in product sources, `#if DEBUG` included.** A
-  generated `*Mock` class lives in the test source set that uses it. The
-  `Local*` classes under `src-kmp/backend-local` are not doubles: they are
-  the sample app's backend behind the same ports a real backend implements,
-  and they ship in product sources by design.
+  generated `*Mock` class lives in the test source set that uses it. Two
+  other kinds of class share the prefix and are not doubles: the `Mock*`
+  services (`MockAuth`, …) are each shell's stand-in behind a port, native
+  per platform, holding their own canned data, present from Tutorial 3 and
+  deleted one-for-one in Tutorial 4 when the real repositories land; the
+  `Local*` classes under `src-kmp/backend-local` are the sample app's
+  backend behind the same ports a real backend implements, and they ship in
+  product sources by design.
 - **A tree passes its own gate.** Every `tutorialN-start` and
   `tutorialN-complete` directory is a complete repository at that step:
   `scripts/run-tree.sh <dir>` is green locally and in CI before it merges.
@@ -36,6 +40,21 @@ The rules every family repository holds, and this repository's own two.
   that disagrees. A family release is one commit: edit `pins.env`, re-pin the
   trees, re-record where the release notes say bytes moved, open one pull
   request, and let the full matrix decide.
+- **Every change lands by pull request.** Branch from `main` as
+  `s<N>/<topic>`, push, open a pull request. The `trees` workflow runs the
+  changed trees (every tree when `pins.env`, `scripts/` or the workflows
+  changed); merge by rebase once its jobs are green, so `main` stays a
+  straight line of green tree states:
+
+  ```sh
+  git switch -c s3/tutorial-2
+  # edit trees; scripts/run-tree.sh <dir> locally
+  git push -u origin s3/tutorial-2
+  gh pr create --fill
+  gh pr checks --watch
+  gh pr merge --rebase --delete-branch
+  ```
+
 - **Copyright header** in every source file: `// Copyright (c) 2026
   Modaal.dev` and the MIT reference, as the family's files carry.
 - **Licensing**: MIT, inbound = outbound; submitting a pull request means
