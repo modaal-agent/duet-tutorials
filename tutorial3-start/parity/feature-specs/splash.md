@@ -39,8 +39,8 @@ The splash owns no presentation slot: the host mounts it and swaps it out on
 | --- | --- | --- | --- |
 | `appeared` | `!isArmed` | `isArmed = true` | `[armSafetyNet(3000)]` under id `splash.safetyNet` |
 | `appeared` | `isArmed` (repeat) | none | `[]` — deliberately inert, pinned by `splash.repeat-appear-inert` |
-| `ceremonyFinished` | none | none | `[notifyHost(completed(ceremony))]` |
-| `safetyNetElapsed` | none | none | `[notifyHost(completed(safetyNet))]` |
+| `ceremonyFinished` | none | none | `[notifyListener(completed(ceremony))]` |
+| `safetyNetElapsed` | none | none | `[notifyListener(completed(safetyNet))]` |
 
 There is no completion latch. Both paths notify the host every time they
 fire, including after the other path already has; the host treats a repeat
@@ -53,7 +53,7 @@ the second notification.
 | Effect | Ingress shape | Backing worker(s) |
 | --- | --- | --- |
 | `armSafetyNet(afterMillis)` | keyed clock: one one-shot timer under id `splash.safetyNet`, so a re-arm cancels an in-flight one and teardown cancels it outright | none — the effect handler sleeps on the environment's clock and emits `safetyNetElapsed` |
-| `notifyHost(SplashDelegateEvent)` | pure environment call: the delegate sink, no id | none |
+| `notifyListener(SplashDelegateEvent)` | pure environment call: the delegate sink, no id. The serial name is the one the chain runner looks for at a hop; the Kotlin class is `NotifyHost` and the environment method `notifyHost` | none |
 
 The timer's temporal contract (fires after the duration and not before,
 exactly once, never after teardown) is a property of the effect handler and
