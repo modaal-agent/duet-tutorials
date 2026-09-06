@@ -1,0 +1,78 @@
+{
+  "description": "The root mounts one child from its phase. A finished splash goes to the gate or to main by the auth snapshot, or waits for it; the gate's completion signs the session in; a sign-out request from under main raises the gate; a late splash completion is inert.",
+  "dialect": 2,
+  "feature": "root",
+  "initialState": {
+    "auth": {
+      "case": "unknown"
+    },
+    "awaitingAuth": false,
+    "phase": {
+      "case": "splash"
+    }
+  },
+  "scenario": {
+    "branch": "signed-in-skips-gate",
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "authChanged",
+        "value": {
+          "auth": {
+            "case": "signedIn",
+            "value": {
+              "displayName": "ann"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann"
+          }
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "splash"
+        }
+      },
+      "label": "signed in skips gate › the host reports a signed-in session",
+      "line": 70
+    },
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann"
+          }
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "main"
+        }
+      },
+      "label": "signed in skips gate › the splash completes",
+      "line": 73
+    }
+  ]
+}

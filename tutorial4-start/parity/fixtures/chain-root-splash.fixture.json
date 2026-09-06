@@ -1,0 +1,68 @@
+{
+  "chain": "root-splash",
+  "description": "The splash's Completed crosses into the root as Splash(event); a signed-out root raises the gate.",
+  "dialect": 2,
+  "initialStates": {
+    "root": {
+      "auth": {
+        "case": "signedOut"
+      },
+      "awaitingAuth": false,
+      "phase": {
+        "case": "splash"
+      }
+    },
+    "splash": {
+      "isArmed": true
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootChainsTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "ceremonyFinished"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed",
+              "value": {
+                "path": {
+                  "case": "ceremony"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "label": "the ceremony ends",
+      "line": 96,
+      "linkToNext": true,
+      "node": "splash"
+    },
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the splash's delegate is the root's action",
+      "line": 104,
+      "node": "root"
+    }
+  ]
+}

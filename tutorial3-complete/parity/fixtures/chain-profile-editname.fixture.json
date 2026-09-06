@@ -1,0 +1,100 @@
+{
+  "chain": "profile-editname",
+  "description": "The editor's Saved crosses into the account screen as EditName(Saved), which takes the name and climbs NameChanged into the profile tab, whose header shows it.",
+  "dialect": 2,
+  "initialStates": {
+    "account": {
+      "child": {
+        "case": "editName"
+      },
+      "displayName": "Ann",
+      "isSigningOut": false
+    },
+    "editname": {
+      "draft": "Ann B",
+      "isSaving": true
+    },
+    "profile": {
+      "child": {
+        "case": "account"
+      },
+      "displayName": "Ann"
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/dev/modaal/foyer/profile/ProfileEditNameChainTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "saveFinished"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "saved",
+              "value": {
+                "name": "Ann B"
+              }
+            }
+          }
+        }
+      ],
+      "label": "the account port confirms the save",
+      "line": 78,
+      "linkToNext": true,
+      "node": "editname"
+    },
+    {
+      "action": {
+        "case": "editName",
+        "value": {
+          "event": {
+            "case": "saved",
+            "value": {
+              "name": "Ann B"
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "nameChanged",
+              "value": {
+                "name": "Ann B"
+              }
+            }
+          }
+        }
+      ],
+      "label": "the editor's delegate is the account screen's action",
+      "line": 84,
+      "linkToNext": true,
+      "node": "account"
+    },
+    {
+      "action": {
+        "case": "account",
+        "value": {
+          "event": {
+            "case": "nameChanged",
+            "value": {
+              "name": "Ann B"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the account screen's delegate is the profile tab's action",
+      "line": 100,
+      "node": "profile"
+    }
+  ]
+}

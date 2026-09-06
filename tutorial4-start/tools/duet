@@ -1,0 +1,214 @@
+#!/usr/bin/env bash
+# The repo's entry to the Duet toolchain CLI. The CLI lives in its own repo
+# (modaal-agent/duet-tools — one URL-consumable package per repo); this wrapper
+# resolves it. When the family publishes an installer channel, this collapses
+# to the released binary on PATH and the wrapper retires.
+#
+#   tools/duet verify            # meta-checks + the JVM host lane
+#   tools/duet record --check    # CI regen gate
+#   tools/duet help              # full verb surface
+#
+# Resolution order:
+#   1. $DUET_BIN                  — explicit binary
+#   2. `duet` on PATH             — installed prebuilt
+#   3. $DUET_TOOLS_HOME           — an existing source checkout, anywhere
+#   4. the released binary at the pin — downloaded once per pin into
+#                                    .duet-family/duet-bin/<pin>/, checksum-
+#                                    verified (macOS arm64 + tag pins only)
+#   5. .duet-family/…             — the repo-local checkout (CI's layout),
+#                                    reconciled onto the parity/duet-tools.ref pin
+#   6. clone it into .duet-family — the heavy fallback, built from source
+#
+# 1–3 are developer-owned overrides and outrank the download: an explicit
+# DUET_TOOLS_HOME means you may be iterating on the toolchain itself, and the
+# wrapper must not silently run a released binary instead of your checkout.
+# 4 is the default: no Swift toolchain, no compile — the pin resolves to the
+# GitHub release asset for that tag. A SHA pin has no release, and the asset
+# is macOS-arm64-only; both fall to the source rungs.
+#
+# The toolchain is PINNED (parity/duet-tools.ref): the gate itself is
+# versioned — pre-1.0 minors are the family's breaking lane, so which
+# toolchain verifies this repo travels in commits. CI resolves the pin on
+# every run and re-validates the binary against it; nothing is cached on it.
+# Only the MANAGED download/checkout (4/5) is reconciled to the pin; a binary,
+# PATH install, or DUET_TOOLS_HOME checkout is developer-owned and never
+# touched.
+#
+# Overrides: DUET_BIN, DUET_TOOLS_HOME, DUET_TOOLS_REF (pin override, one-off),
+# DUET_NO_DOWNLOAD=1 to skip step 4, DUET_NO_CLONE=1 to disable step 6.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+FAMILY_DIR="$REPO_ROOT/.duet-family/modaal-agent-duet-tools"
+TOOLS_REPO="modaal-agent/duet-tools"
+PIN_FILE="$REPO_ROOT/parity/duet-tools.ref"
+
+# The pin: first non-comment, non-blank line. An explicit DUET_TOOLS_REF wins.
+if [[ -n "${DUET_TOOLS_REF:-}" ]]; then
+  TOOLS_REF="$DUET_TOOLS_REF"
+elif [[ -f "$PIN_FILE" ]]; then
+  TOOLS_REF="$(grep -vE '^[[:space:]]*(#|$)' "$PIN_FILE" | head -1 | tr -d '[:space:]')"
+fi
+if [[ -z "${TOOLS_REF:-}" ]]; then
+  echo "tools/duet: no pin at $PIN_FILE and no DUET_TOOLS_REF set." >&2
+  echo "  The pin is required — a floating toolchain means floating gate semantics." >&2
+  exit 2
+fi
+
+# --- Step 4 machinery: the released binary at the pin ------------------------
+BIN_CACHE_ROOT="$REPO_ROOT/.duet-family/duet-bin"
+RELEASE_ASSET="duet-macos-arm64.zip"
+
+fetch_release_asset() {
+  # $1 = asset filename, $2 = destination path. Silenced — the caller prints
+  # the one note that matters when the download does not work.
+  curl -fsSL --retry 2 --connect-timeout 10 -o "$2" \
+    "https://github.com/$TOOLS_REPO/releases/download/$TOOLS_REF/$1" 2>/dev/null
+}
+
+resolve_release_binary() {
+  # Sets RUN_BIN on success; returns 1 to fall through to the source rungs.
+  # A download failure (offline, unauthenticated, unpublished pin) falls
+  # through; a CHECKSUM or version mismatch is an integrity failure and hard-
+  # stops — never silently run a binary that failed its own gate.
+  local cached="$BIN_CACHE_ROOT/$TOOLS_REF/duet"
+  # The cache self-validates on every use: the binary must run and report the
+  # pinned version, so a truncated cache restore is re-fetched, not trusted.
+  if [[ -x "$cached" && "$("$cached" version 2>/dev/null || true)" == "duet $TOOLS_REF" ]]; then
+    RUN_BIN="$cached"
+    return 0
+  fi
+  rm -rf "$BIN_CACHE_ROOT/$TOOLS_REF"
+  local stage
+  stage="$(mktemp -d "${TMPDIR:-/tmp}/duet-bin.XXXXXX")"
+  if ! fetch_release_asset "$RELEASE_ASSET" "$stage/$RELEASE_ASSET" \
+     || ! fetch_release_asset "$RELEASE_ASSET.sha256" "$stage/$RELEASE_ASSET.sha256"; then
+    echo "tools/duet: no downloadable release for pin $TOOLS_REF (offline, unauthenticated," >&2
+    echo "  or the tag has no published asset) — falling back to the source build." >&2
+    rm -rf "$stage"
+    return 1
+  fi
+  if ! (cd "$stage" && shasum -a 256 -c "$RELEASE_ASSET.sha256" >/dev/null 2>&1); then
+    echo "tools/duet: CHECKSUM MISMATCH for $RELEASE_ASSET at pin $TOOLS_REF — refusing to run it." >&2
+    echo "  The download is at $stage for inspection; a re-run re-downloads." >&2
+    exit 2
+  fi
+  unzip -qo "$stage/$RELEASE_ASSET" -d "$stage"
+  chmod +x "$stage/duet"
+  local reported
+  reported="$("$stage/duet" version 2>/dev/null || true)"
+  if [[ "$reported" != "duet $TOOLS_REF" ]]; then
+    echo "tools/duet: released binary reports '${reported:-nothing}', the pin wants 'duet $TOOLS_REF' — refusing." >&2
+    exit 2
+  fi
+  mkdir -p "$BIN_CACHE_ROOT/$TOOLS_REF"
+  mv "$stage/duet" "$cached"
+  rm -rf "$stage"
+  echo "tools/duet: using the released binary at pin $TOOLS_REF (checksum verified)" >&2
+  RUN_BIN="$cached"
+}
+# -----------------------------------------------------------------------------
+
+RUN_BIN=""
+CHECKOUT=""
+
+if [[ -n "${DUET_BIN:-}" ]]; then
+  # 1 — explicit binary; no Swift toolchain, no compile.
+  if [[ ! -x "$DUET_BIN" ]]; then
+    echo "tools/duet: DUET_BIN=$DUET_BIN is not executable" >&2
+    exit 2
+  fi
+  RUN_BIN="$DUET_BIN"
+elif command -v duet >/dev/null 2>&1; then
+  # 2 — an installed prebuilt on PATH.
+  RUN_BIN="$(command -v duet)"
+elif [[ -n "${DUET_TOOLS_HOME:-}" ]]; then
+  # 3 — the caller's own checkout: developer-owned, never reconciled to the pin
+  # (you may be iterating on the toolchain itself).
+  if [[ ! -f "$DUET_TOOLS_HOME/Package.swift" ]]; then
+    echo "tools/duet: DUET_TOOLS_HOME=$DUET_TOOLS_HOME has no Package.swift" >&2
+    echo "  (is that path still valid on this machine? is its volume mounted?)" >&2
+    exit 2
+  fi
+  CHECKOUT="$DUET_TOOLS_HOME"
+else
+  # 4 — the released binary at the pin (tag pins on macOS arm64 only; the
+  # release publishes no other architecture).
+  if [[ "${DUET_NO_DOWNLOAD:-}" != "1" \
+        && "$(uname -s)" == "Darwin" && "$(uname -m)" == "arm64" ]] \
+     && [[ "$TOOLS_REF" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    resolve_release_binary || true
+  fi
+fi
+
+if [[ -z "$RUN_BIN" && -z "$CHECKOUT" ]]; then
+  # 5 + 6 — the MANAGED checkout: cloned when absent (loud — it is minutes of
+  # compile, not a silent side effect), then reconciled onto the pin. Without
+  # the reconcile a cache-restored or old clone stays at its clone-time commit
+  # forever — silent staleness.
+  if [[ ! -d "$FAMILY_DIR/.git" ]]; then
+    if [[ "${DUET_NO_CLONE:-}" == "1" ]]; then
+      echo "tools/duet: no duet CLI found and DUET_NO_CLONE=1." >&2
+      echo "  Set DUET_BIN, put duet on PATH, or set DUET_TOOLS_HOME." >&2
+      exit 2
+    fi
+    echo "tools/duet: no duet CLI found — cloning $TOOLS_REPO@$TOOLS_REF into" >&2
+    echo "  .duet-family/ and building from source (one-time, several minutes)." >&2
+    echo "  Skip with DUET_NO_CLONE=1; point at an existing checkout with DUET_TOOLS_HOME." >&2
+    mkdir -p "$(dirname "$FAMILY_DIR")"
+    # `--filter=blob:none --no-checkout` rather than `--depth 1 --branch`: the
+    # pin may be a SHA, and `--branch` only accepts branch/tag names.
+    if ! git clone --filter=blob:none --no-checkout \
+         "https://github.com/$TOOLS_REPO.git" "$FAMILY_DIR"; then
+      echo "tools/duet: could not clone $TOOLS_REPO." >&2
+      echo "  Point DUET_TOOLS_HOME at an existing checkout, or set DUET_BIN." >&2
+      exit 2
+    fi
+  fi
+
+  # Reconcile with the pin. Resolving the ref may need a fetch (a new tag, or a
+  # SHA this clone has never seen).
+  resolve_pin() { git -C "$FAMILY_DIR" rev-parse --verify --quiet "${TOOLS_REF}^{commit}" 2>/dev/null; }
+  WANT_SHA="$(resolve_pin || true)"
+  if [[ -z "$WANT_SHA" ]]; then
+    git -C "$FAMILY_DIR" fetch --quiet --tags origin "$TOOLS_REF" 2>/dev/null \
+      || git -C "$FAMILY_DIR" fetch --quiet --tags origin 2>/dev/null || true
+    WANT_SHA="$(resolve_pin || true)"
+  fi
+  if [[ -z "$WANT_SHA" ]]; then
+    echo "tools/duet: cannot resolve pinned ref '$TOOLS_REF' in $FAMILY_DIR." >&2
+    echo "  Is parity/duet-tools.ref naming a tag/SHA that exists upstream?" >&2
+    exit 2
+  fi
+  HEAD_SHA="$(git -C "$FAMILY_DIR" rev-parse HEAD)"
+  if [[ -z "$(git -C "$FAMILY_DIR" ls-files | head -1 || true)" ]]; then
+    # Never checked out (fresh --no-checkout clone, or a truncated cache
+    # restore) — no working tree to protect. --force: an empty index reads as
+    # whole-tree staged deletions, which a plain checkout carries forward.
+    echo "tools/duet: materializing $TOOLS_REPO at ${WANT_SHA:0:7} (pin: $TOOLS_REF)" >&2
+    git -C "$FAMILY_DIR" checkout --quiet --force --detach "$WANT_SHA"
+  elif [[ "$HEAD_SHA" != "$WANT_SHA" ]]; then
+    if [[ -n "$(git -C "$FAMILY_DIR" status --porcelain 2>/dev/null)" ]]; then
+      # Local toolchain work in flight — never clobber it.
+      echo "tools/duet: WARNING — managed checkout is DIRTY at ${HEAD_SHA:0:7}, pin wants ${WANT_SHA:0:7} ($TOOLS_REF)." >&2
+      echo "  Leaving it alone; running your working tree." >&2
+    else
+      echo "tools/duet: moving $TOOLS_REPO ${HEAD_SHA:0:7} -> ${WANT_SHA:0:7} (pin: $TOOLS_REF)" >&2
+      git -C "$FAMILY_DIR" checkout --quiet --detach "$WANT_SHA"
+    fi
+  fi
+  if [[ ! -f "$FAMILY_DIR/Package.swift" ]]; then
+    echo "tools/duet: $FAMILY_DIR has no Package.swift at the pin." >&2
+    echo "  Try: rm -rf '$FAMILY_DIR' && re-run (a re-clone is cheap)." >&2
+    exit 2
+  fi
+  CHECKOUT="$FAMILY_DIR"
+fi
+
+# The Kotlin lanes resolve dev.modaal.duet:* from the family's published
+# Maven repository (src-kmp/settings.gradle.kts) — nothing to provision here.
+
+if [[ -n "$RUN_BIN" ]]; then
+  exec "$RUN_BIN" "$@"
+fi
+exec swift run --package-path "$CHECKOUT" duet "$@"

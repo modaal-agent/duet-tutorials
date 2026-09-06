@@ -1,0 +1,74 @@
+{
+  "description": "The gate sends one sign-in at a time to the auth port, rejects an empty address before it reaches the port, and completes with a display name: the account's saved one, or one derived from the provider.",
+  "dialect": 2,
+  "feature": "signin",
+  "initialState": {
+    "isSigningIn": false
+  },
+  "scenario": {
+    "branch": "port-failure-lands",
+    "source": "src-kmp/subtrees/signin/logic/src/jvmTest/kotlin/dev/modaal/foyer/signin/SignInScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped",
+        "value": {
+          "provider": {
+            "case": "email",
+            "value": {
+              "address": "ann@example.com"
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "signIn",
+            "value": {
+              "provider": {
+                "case": "email",
+                "value": {
+                  "address": "ann@example.com"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isSigningIn": true,
+        "pending": {
+          "case": "email",
+          "value": {
+            "address": "ann@example.com"
+          }
+        }
+      },
+      "label": "port failure lands › continue with an email",
+      "line": 74
+    },
+    {
+      "action": {
+        "case": "signInFinished",
+        "value": {
+          "outcome": {
+            "case": "failed",
+            "value": {
+              "reason": "No account for that address."
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "failure": "No account for that address.",
+        "isSigningIn": false
+      },
+      "label": "port failure lands › the port refuses",
+      "line": 75
+    }
+  ]
+}

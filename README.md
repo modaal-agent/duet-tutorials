@@ -16,7 +16,9 @@ passes its own checks.
 | `tutorial1-complete` | [Tutorial 1: Your First Feature](https://docs.modaal.dev/tutorials/duet-01-first-feature) |
 | `tutorial2-start` | [Tutorial 2: One Behavior, Two Apps](https://docs.modaal.dev/tutorials/duet-02-two-apps) |
 | `tutorial2-complete` | [Tutorial 2: One Behavior, Two Apps](https://docs.modaal.dev/tutorials/duet-02-two-apps) |
-| `tutorial3-start` | Tutorial 3: Composing Features (page not yet published) |
+| `tutorial3-start` | [Tutorial 3: Composing Features](https://docs.modaal.dev/tutorials/duet-03-composing-features) |
+| `tutorial3-complete` | [Tutorial 3: Composing Features](https://docs.modaal.dev/tutorials/duet-03-composing-features) |
+| `tutorial4-start` | Tutorial 4: Workers (page not yet published) |
 
 ## Running a tree's checks
 

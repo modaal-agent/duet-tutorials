@@ -1,0 +1,69 @@
+{
+  "description": "The root mounts one child from its phase. A finished splash goes to the gate or to main by the auth snapshot, or waits for it; the gate's completion signs the session in; a sign-out request from under main raises the gate; a late splash completion is inert.",
+  "dialect": 2,
+  "feature": "root",
+  "initialState": {
+    "auth": {
+      "case": "unknown"
+    },
+    "awaitingAuth": false,
+    "phase": {
+      "case": "splash"
+    }
+  },
+  "scenario": {
+    "branch": "splash-before-auth-holds",
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "unknown"
+        },
+        "awaitingAuth": true,
+        "phase": {
+          "case": "splash"
+        }
+      },
+      "label": "splash before auth holds › the splash completes while auth is unknown",
+      "line": 36
+    },
+    {
+      "action": {
+        "case": "authChanged",
+        "value": {
+          "auth": {
+            "case": "signedOut"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedOut"
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "signIn"
+        }
+      },
+      "label": "splash before auth holds › the host reports a signed-out session",
+      "line": 40
+    }
+  ]
+}

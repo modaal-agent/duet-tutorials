@@ -1,0 +1,44 @@
+{
+  "description": "The profile tab mounts the account screen from state, clears it on the child's Closed, refreshes its header on NameChanged, and relays SignOutRequested upward.",
+  "dialect": 2,
+  "feature": "profile",
+  "initialState": {
+    "displayName": "Ann"
+  },
+  "scenario": {
+    "branch": "account-closes",
+    "source": "src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/dev/modaal/foyer/profile/ProfileScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "accountTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "account"
+        },
+        "displayName": "Ann"
+      },
+      "label": "the Account row",
+      "line": 28
+    },
+    {
+      "action": {
+        "case": "account",
+        "value": {
+          "event": {
+            "case": "closed"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "displayName": "Ann"
+      },
+      "label": "account closes › the child closes",
+      "line": 33
+    }
+  ]
+}
