@@ -9,6 +9,6 @@ pointer, not a copy.
 tools/duet verify
 ```
 
-The command above is green before the first edit, apart from the one
-deliberately failing test the tutorial's closing exercise asks you to make
-pass.
+The command above is green before the first edit. This tree carries no
+deliberately failing test: Tutorial 1's closing exercise breaks the feature
+you write and watches a recording catch it.

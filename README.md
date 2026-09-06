@@ -13,6 +13,8 @@ passes its own checks.
 | tree | page |
 | --- | --- |
 | `tutorial1-start` | [Tutorial 1: Your First Feature](https://docs.modaal.dev/tutorials/duet-01-first-feature) |
+| `tutorial1-complete` | [Tutorial 1: Your First Feature](https://docs.modaal.dev/tutorials/duet-01-first-feature) |
+| `tutorial2-start` | Tutorial 2: One Behavior, Two Apps (page not yet published) |
 
 ## Running a tree's checks
 

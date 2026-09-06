@@ -1,0 +1,12 @@
+# Gradle / JVM
+.gradle/
+build/
+local.properties
+
+# Duet toolchain
+parity/.runs/
+# Where tools/duet caches the pinned toolchain binary.
+.duet-family/
+
+# OS
+.DS_Store
