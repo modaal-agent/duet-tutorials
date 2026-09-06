@@ -91,7 +91,7 @@ sealed interface SplashEffectPayload {
 
   /** Hand a delegate event to the host. */
   @Serializable
-  @SerialName("notifyHost")
+  @SerialName("notifyListener")
   data class NotifyHost(val event: SplashDelegateEvent) : SplashEffectPayload
 }
 
