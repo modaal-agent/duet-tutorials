@@ -1,0 +1,43 @@
+{
+  "description": "The editor validates the trimmed draft at Save: empty and over-long names never reach the account port; a valid one saves once and climbs to the parent as Saved; Cancel climbs as Closed.",
+  "dialect": 2,
+  "feature": "editname",
+  "initialState": {
+    "draft": "Ann",
+    "isSaving": false
+  },
+  "scenario": {
+    "branch": "empty-name-rejected",
+    "source": "src-kmp/subtrees/editname/logic/src/jvmTest/kotlin/dev/modaal/foyer/editname/EditNameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "   "
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "   ",
+        "isSaving": false
+      },
+      "label": "empty name rejected › the user clears the field",
+      "line": 46
+    },
+    {
+      "action": {
+        "case": "saveTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "   ",
+        "isSaving": false,
+        "validation": "Enter a name."
+      },
+      "label": "empty name rejected › save",
+      "line": 47
+    }
+  ]
+}

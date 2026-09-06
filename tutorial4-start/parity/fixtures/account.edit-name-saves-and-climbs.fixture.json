@@ -1,0 +1,63 @@
+{
+  "description": "The account screen mounts the name editor from state, takes the editor's Saved as its own name and climbs it as NameChanged, signs out through the auth port once, and climbs Closed when the user leaves.",
+  "dialect": 2,
+  "feature": "account",
+  "initialState": {
+    "displayName": "Ann",
+    "isSigningOut": false
+  },
+  "scenario": {
+    "branch": "edit-name-saves-and-climbs",
+    "source": "src-kmp/subtrees/account/logic/src/jvmTest/kotlin/dev/modaal/foyer/account/AccountScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "editNameTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "editName"
+        },
+        "displayName": "Ann",
+        "isSigningOut": false
+      },
+      "label": "edit name saves and climbs › the Edit name row",
+      "line": 29
+    },
+    {
+      "action": {
+        "case": "editName",
+        "value": {
+          "event": {
+            "case": "saved",
+            "value": {
+              "name": "Ann B"
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "nameChanged",
+              "value": {
+                "name": "Ann B"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "displayName": "Ann B",
+        "isSigningOut": false
+      },
+      "label": "edit name saves and climbs › the editor saves",
+      "line": 32
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+# The feature-parity manifest. Every feature declares its one commonMain
+# implementation, the scenario its fixtures are compiled from (fixtures are
+# build products of `tools/duet record` — never edited by hand), and the
+# fixtures that pin its behavior. The `duet` CLI is this file's only parser
+# (grammar: the toolchain's contracts/manifest.md); unknown top-level keys are
+# an error, and the indentation shape is part of the grammar.
+
+features:
+  splash:
+    kotlin: src-kmp/subtrees/splash/logic/src/commonMain/kotlin/dev/modaal/foyer/splash/SplashFeature.kt
+    state: SplashState
+    action: SplashAction
+    effectPayload: SplashEffectPayload
+    scenario: src-kmp/subtrees/splash/logic/src/jvmTest/kotlin/dev/modaal/foyer/splash/SplashScenarioTest.kt
+    fixtures:
+      - splash.ceremony-completes
+      - splash.safety-net-fires
+      - splash.both-paths-notify-twice
+      - splash.repeat-appear-inert
+
+  root:
+    kotlin: src-kmp/subtrees/root/logic/src/commonMain/kotlin/dev/modaal/foyer/root/RootFeature.kt
+    state: RootState
+    action: RootAction
+    effectPayload: RootEffectPayload
+    scenario: src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt
+    fixtures:
+      - root.splash-before-auth-holds
+      - root.gate-after-splash
+      - root.late-splash-inert
+      - root.signed-in-skips-gate
+      - root.sign-out-returns-to-gate
+  signin:
+    kotlin: src-kmp/subtrees/signin/logic/src/commonMain/kotlin/dev/modaal/foyer/signin/SignInFeature.kt
+    state: SignInState
+    action: SignInAction
+    effectPayload: SignInEffectPayload
+    scenario: src-kmp/subtrees/signin/logic/src/jvmTest/kotlin/dev/modaal/foyer/signin/SignInScenarioTest.kt
+    fixtures:
+      - signin.email-signs-in
+      - signin.guest-signs-in
+      - signin.empty-address-fails
+      - signin.port-failure-lands
+  main:
+    kotlin: src-kmp/subtrees/main/logic/src/commonMain/kotlin/dev/modaal/foyer/main/MainFeature.kt
+    state: MainState
+    action: MainAction
+    effectPayload: MainEffectPayload
+    scenario: src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainScenarioTest.kt
+    fixtures:
+      - main.tab-switches
+      - main.sign-out-relays
+  home:
+    kotlin: src-kmp/subtrees/home/logic/src/commonMain/kotlin/dev/modaal/foyer/home/HomeFeature.kt
+    state: HomeState
+    action: HomeAction
+    effectPayload: HomeEffectPayload
+    scenario: src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt
+    fixtures:
+      - home.loads-once
+      - home.reappear-keeps-items
+  profile:
+    kotlin: src-kmp/subtrees/profile/logic/src/commonMain/kotlin/dev/modaal/foyer/profile/ProfileFeature.kt
+    state: ProfileState
+    action: ProfileAction
+    effectPayload: ProfileEffectPayload
+    scenario: src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/dev/modaal/foyer/profile/ProfileScenarioTest.kt
+    fixtures:
+      - profile.account-closes
+      - profile.name-change-updates-header
+      - profile.sign-out-relays
+  account:
+    kotlin: src-kmp/subtrees/account/logic/src/commonMain/kotlin/dev/modaal/foyer/account/AccountFeature.kt
+    state: AccountState
+    action: AccountAction
+    effectPayload: AccountEffectPayload
+    scenario: src-kmp/subtrees/account/logic/src/jvmTest/kotlin/dev/modaal/foyer/account/AccountScenarioTest.kt
+    fixtures:
+      - account.edit-name-saves-and-climbs
+      - account.edit-name-cancels
+      - account.sign-out-requests-once
+      - account.close-climbs
+  editname:
+    kotlin: src-kmp/subtrees/editname/logic/src/commonMain/kotlin/dev/modaal/foyer/editname/EditNameFeature.kt
+    state: EditNameState
+    action: EditNameAction
+    effectPayload: EditNameEffectPayload
+    scenario: src-kmp/subtrees/editname/logic/src/jvmTest/kotlin/dev/modaal/foyer/editname/EditNameScenarioTest.kt
+    fixtures:
+      - editname.valid-name-saves
+      - editname.empty-name-rejected
+      - editname.long-name-rejected
+      - editname.cancel-closes
+
+# Chain fixtures pin a composition seam across features: the delegate event
+# one feature emits, received as the next feature's action. Owned by no
+# single feature; the test that records each one lives in the module of the
+# chain's last node.
+chains:
+  - chain-root-splash
+  - chain-root-signin
+  - chain-main-signout
+  - chain-profile-editname
+
+presentation:
+  waivers: []
+  islands: []
+
+# Generated Swift code, `tools/duet mocks`. One row per generated file; the
+# bundle tag pins the swift-sourcery-templates release that carries the engine,
+# the templates and the mock-templates CLI together. Regeneration is
+# `tools/duet mocks`; the CI gate is `tools/duet mocks --check`, which
+# validates each file's fingerprint block without running the engine. Files
+# under Generated/ are build products: change the protocol and regenerate,
+# never hand-edit. Two rows per shell target: the level's Component, generated
+# from its `DuetComponent`-annotated Dependency into the target, and the
+# Dependency's test double, generated from `CreateMock` into the test target.
+# Kotlin-side test doubles are the KSP processor's, wired per module in
+# Gradle, and take no rows here.
+mocks:
+  bundle: 0.6.2
+  generators:
+    signin_components:
+      output: src-ios/Libraries/FoyerKit/Sources/SignInShell/Generated/SignInShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/SignInShell
+      args:
+        - import=FoyerKit
+    signin_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/SignInShellTests/Generated/SignInShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/SignInShell
+      args:
+        - import=SignInShell
+        - import=FoyerKit
+    home_components:
+      output: src-ios/Libraries/FoyerKit/Sources/HomeShell/Generated/HomeShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/HomeShell
+      args:
+        - import=FoyerKit
+    home_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/HomeShellTests/Generated/HomeShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/HomeShell
+      args:
+        - import=HomeShell
+        - import=FoyerKit
+    editname_components:
+      output: src-ios/Libraries/FoyerKit/Sources/EditNameShell/Generated/EditNameShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/EditNameShell
+      args:
+        - import=FoyerKit
+    editname_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/EditNameShellTests/Generated/EditNameShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/EditNameShell
+      args:
+        - import=EditNameShell
+        - import=FoyerKit
+    account_components:
+      output: src-ios/Libraries/FoyerKit/Sources/AccountShell/Generated/AccountShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/AccountShell
+      args:
+        - import=FoyerKit
+    account_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/AccountShellTests/Generated/AccountShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/AccountShell
+      args:
+        - import=AccountShell
+        - import=FoyerKit
+    profile_components:
+      output: src-ios/Libraries/FoyerKit/Sources/ProfileShell/Generated/ProfileShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/ProfileShell
+      args:
+        - import=FoyerKit
+    profile_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/ProfileShellTests/Generated/ProfileShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/ProfileShell
+      args:
+        - import=ProfileShell
+        - import=FoyerKit
+    main_components:
+      output: src-ios/Libraries/FoyerKit/Sources/MainShell/Generated/MainShellComponents.swift
+      template: Component.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/MainShell
+      args:
+        - import=FoyerKit
+    main_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/MainShellTests/Generated/MainShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/MainShell
+      args:
+        - import=MainShell
+        - import=FoyerKit
+    root_mocks:
+      output: src-ios/Libraries/FoyerKit/Tests/RootShellTests/Generated/RootShellMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Libraries/FoyerKit/Sources/RootShell
+      args:
+        - import=RootShell
+        - import=FoyerKit

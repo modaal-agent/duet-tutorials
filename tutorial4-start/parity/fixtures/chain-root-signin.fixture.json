@@ -1,0 +1,78 @@
+{
+  "chain": "root-signin",
+  "description": "The gate's Completed crosses into the root as SignIn(event); the root signs the session in and mounts main.",
+  "dialect": 2,
+  "initialStates": {
+    "root": {
+      "auth": {
+        "case": "signedOut"
+      },
+      "awaitingAuth": false,
+      "phase": {
+        "case": "signIn"
+      }
+    },
+    "signin": {
+      "isSigningIn": true,
+      "pending": {
+        "case": "email",
+        "value": {
+          "address": "ann@example.com"
+        }
+      }
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootChainsTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "signInFinished",
+        "value": {
+          "outcome": {
+            "case": "signedIn",
+            "value": {
+              "displayName": "Ann"
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed",
+              "value": {
+                "displayName": "Ann"
+              }
+            }
+          }
+        }
+      ],
+      "label": "the auth port signs the account in",
+      "line": 147,
+      "linkToNext": true,
+      "node": "signin"
+    },
+    {
+      "action": {
+        "case": "signIn",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "displayName": "Ann"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the gate's delegate is the root's action",
+      "line": 156,
+      "node": "root"
+    }
+  ]
+}

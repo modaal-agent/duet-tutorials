@@ -1,0 +1,89 @@
+{
+  "description": "The editor validates the trimmed draft at Save: empty and over-long names never reach the account port; a valid one saves once and climbs to the parent as Saved; Cancel climbs as Closed.",
+  "dialect": 2,
+  "feature": "editname",
+  "initialState": {
+    "draft": "Ann",
+    "isSaving": false
+  },
+  "scenario": {
+    "branch": "valid-name-saves",
+    "source": "src-kmp/subtrees/editname/logic/src/jvmTest/kotlin/dev/modaal/foyer/editname/EditNameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": " Ann B "
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isSaving": false
+      },
+      "label": "valid name saves › the user types a new name",
+      "line": 28
+    },
+    {
+      "action": {
+        "case": "saveTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "saveName",
+            "value": {
+              "name": "Ann B"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isSaving": true
+      },
+      "label": "valid name saves › save",
+      "line": 30
+    },
+    {
+      "action": {
+        "case": "saveTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isSaving": true
+      },
+      "label": "valid name saves › a second save while in flight",
+      "line": 36
+    },
+    {
+      "action": {
+        "case": "saveFinished"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "saved",
+              "value": {
+                "name": "Ann B"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isSaving": false
+      },
+      "label": "valid name saves › the port confirms",
+      "line": 38
+    }
+  ]
+}

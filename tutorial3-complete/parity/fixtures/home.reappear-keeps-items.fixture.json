@@ -1,0 +1,88 @@
+{
+  "description": "The home tab loads its list once, on the first appearance; a repeat appearance while loading or once loaded is inert.",
+  "dialect": 2,
+  "feature": "home",
+  "initialState": {
+    "isLoading": false,
+    "items": []
+  },
+  "scenario": {
+    "branch": "reappear-keeps-items",
+    "source": "src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadItems"
+          }
+        }
+      ],
+      "expectedState": {
+        "isLoading": true,
+        "items": []
+      },
+      "label": "the tab appears",
+      "line": 27
+    },
+    {
+      "action": {
+        "case": "itemsLoaded",
+        "value": {
+          "items": [
+            {
+              "id": "1",
+              "title": "Welcome note"
+            },
+            {
+              "id": "2",
+              "title": "Getting started"
+            }
+          ]
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isLoading": false,
+        "items": [
+          {
+            "id": "1",
+            "title": "Welcome note"
+          },
+          {
+            "id": "2",
+            "title": "Getting started"
+          }
+        ]
+      },
+      "label": "reappear keeps items › the port answers",
+      "line": 41
+    },
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isLoading": false,
+        "items": [
+          {
+            "id": "1",
+            "title": "Welcome note"
+          },
+          {
+            "id": "2",
+            "title": "Getting started"
+          }
+        ]
+      },
+      "label": "reappear keeps items › the tab appears again after a switch",
+      "line": 42
+    }
+  ]
+}

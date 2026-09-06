@@ -1,0 +1,58 @@
+{
+  "description": "The editor validates the trimmed draft at Save: empty and over-long names never reach the account port; a valid one saves once and climbs to the parent as Saved; Cancel climbs as Closed.",
+  "dialect": 2,
+  "feature": "editname",
+  "initialState": {
+    "draft": "Ann",
+    "isSaving": false
+  },
+  "scenario": {
+    "branch": "long-name-rejected",
+    "source": "src-kmp/subtrees/editname/logic/src/jvmTest/kotlin/dev/modaal/foyer/editname/EditNameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "isSaving": false
+      },
+      "label": "long name rejected › the user types 41 characters",
+      "line": 55
+    },
+    {
+      "action": {
+        "case": "saveTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "isSaving": false,
+        "validation": "Keep it to 40 characters or fewer."
+      },
+      "label": "long name rejected › save",
+      "line": 58
+    },
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "isSaving": false
+      },
+      "label": "long name rejected › one character removed",
+      "line": 61
+    }
+  ]
+}

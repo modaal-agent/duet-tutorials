@@ -1,0 +1,68 @@
+{
+  "description": "The account screen mounts the name editor from state, takes the editor's Saved as its own name and climbs it as NameChanged, signs out through the auth port once, and climbs Closed when the user leaves.",
+  "dialect": 2,
+  "feature": "account",
+  "initialState": {
+    "displayName": "Ann",
+    "isSigningOut": false
+  },
+  "scenario": {
+    "branch": "sign-out-requests-once",
+    "source": "src-kmp/subtrees/account/logic/src/jvmTest/kotlin/dev/modaal/foyer/account/AccountScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "signOutTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "signOut"
+          }
+        }
+      ],
+      "expectedState": {
+        "displayName": "Ann",
+        "isSigningOut": true
+      },
+      "label": "sign out requests once › the Sign out row",
+      "line": 52
+    },
+    {
+      "action": {
+        "case": "signOutTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "displayName": "Ann",
+        "isSigningOut": true
+      },
+      "label": "sign out requests once › a second tap while in flight",
+      "line": 57
+    },
+    {
+      "action": {
+        "case": "signedOut"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "signOutRequested"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "displayName": "Ann",
+        "isSigningOut": false
+      },
+      "label": "sign out requests once › the port confirms",
+      "line": 59
+    }
+  ]
+}

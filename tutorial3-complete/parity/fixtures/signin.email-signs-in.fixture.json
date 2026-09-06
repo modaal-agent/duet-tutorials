@@ -1,0 +1,108 @@
+{
+  "description": "The gate sends one sign-in at a time to the auth port, rejects an empty address before it reaches the port, and completes with a display name: the account's saved one, or one derived from the provider.",
+  "dialect": 2,
+  "feature": "signin",
+  "initialState": {
+    "isSigningIn": false
+  },
+  "scenario": {
+    "branch": "email-signs-in",
+    "source": "src-kmp/subtrees/signin/logic/src/jvmTest/kotlin/dev/modaal/foyer/signin/SignInScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped",
+        "value": {
+          "provider": {
+            "case": "email",
+            "value": {
+              "address": "ann@example.com"
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "signIn",
+            "value": {
+              "provider": {
+                "case": "email",
+                "value": {
+                  "address": "ann@example.com"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isSigningIn": true,
+        "pending": {
+          "case": "email",
+          "value": {
+            "address": "ann@example.com"
+          }
+        }
+      },
+      "label": "email signs in › continue with an email",
+      "line": 34
+    },
+    {
+      "action": {
+        "case": "continueTapped",
+        "value": {
+          "provider": {
+            "case": "email",
+            "value": {
+              "address": "ann@example.com"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isSigningIn": true,
+        "pending": {
+          "case": "email",
+          "value": {
+            "address": "ann@example.com"
+          }
+        }
+      },
+      "label": "email signs in › a second tap while in flight",
+      "line": 39
+    },
+    {
+      "action": {
+        "case": "signInFinished",
+        "value": {
+          "outcome": {
+            "case": "signedIn"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed",
+              "value": {
+                "displayName": "ann"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isSigningIn": false
+      },
+      "label": "email signs in › the port signs the account in with no saved name",
+      "line": 41
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "description": "The splash arms a safety net when it appears and completes by whichever path gets there first: the animation ending, or the net firing. Both paths notify the host every time; a repeat Appeared is inert.",
+  "dialect": 2,
+  "feature": "splash",
+  "initialState": {
+    "isArmed": false
+  },
+  "scenario": {
+    "branch": "repeat-appear-inert",
+    "source": "src-kmp/subtrees/splash/logic/src/jvmTest/kotlin/dev/modaal/foyer/splash/SplashScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "id": "splash.safetyNet",
+          "kind": "run",
+          "payload": {
+            "case": "armSafetyNet",
+            "value": {
+              "afterMillis": 3000
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isArmed": true
+      },
+      "label": "the splash appears",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isArmed": true
+      },
+      "label": "repeat appear inert › the splash reports appearing a second time",
+      "line": 71
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "chain": "main-signout",
+  "description": "A confirmed sign-out climbs from the account screen through the profile tab and the main level to the root, which raises the gate. Each level relays the request unchanged.",
+  "dialect": 2,
+  "initialStates": {
+    "account": {
+      "displayName": "Ann",
+      "isSigningOut": true
+    },
+    "main": {
+      "activeTab": {
+        "case": "profile"
+      }
+    },
+    "profile": {
+      "child": {
+        "case": "account"
+      },
+      "displayName": "Ann"
+    },
+    "root": {
+      "auth": {
+        "case": "signedIn",
+        "value": {
+          "displayName": "Ann"
+        }
+      },
+      "awaitingAuth": false,
+      "phase": {
+        "case": "main"
+      }
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootChainsTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "signedOut"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "signOutRequested"
+            }
+          }
+        }
+      ],
+      "label": "the auth port confirms the sign-out",
+      "line": 218,
+      "linkToNext": true,
+      "node": "account"
+    },
+    {
+      "action": {
+        "case": "account",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "signOutRequested"
+            }
+          }
+        }
+      ],
+      "label": "account to profile",
+      "line": 224,
+      "linkToNext": true,
+      "node": "profile"
+    },
+    {
+      "action": {
+        "case": "profile",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "signOutRequested"
+            }
+          }
+        }
+      ],
+      "label": "profile to main",
+      "line": 237,
+      "linkToNext": true,
+      "node": "main"
+    },
+    {
+      "action": {
+        "case": "main",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "main to root",
+      "line": 250,
+      "node": "root"
+    }
+  ]
+}

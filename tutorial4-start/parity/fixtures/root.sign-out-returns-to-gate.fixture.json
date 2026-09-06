@@ -1,0 +1,100 @@
+{
+  "description": "The root mounts one child from its phase. A finished splash goes to the gate or to main by the auth snapshot, or waits for it; the gate's completion signs the session in; a sign-out request from under main raises the gate; a late splash completion is inert.",
+  "dialect": 2,
+  "feature": "root",
+  "initialState": {
+    "auth": {
+      "case": "unknown"
+    },
+    "awaitingAuth": false,
+    "phase": {
+      "case": "splash"
+    }
+  },
+  "scenario": {
+    "branch": "sign-out-returns-to-gate",
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "authChanged",
+        "value": {
+          "auth": {
+            "case": "signedIn",
+            "value": {
+              "displayName": "ann"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann"
+          }
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "splash"
+        }
+      },
+      "label": "sign out returns to gate › the host reports a signed-in session",
+      "line": 78
+    },
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann"
+          }
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "main"
+        }
+      },
+      "label": "sign out returns to gate › the splash completes",
+      "line": 81
+    },
+    {
+      "action": {
+        "case": "main",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedOut"
+        },
+        "awaitingAuth": false,
+        "phase": {
+          "case": "signIn"
+        }
+      },
+      "label": "sign out returns to gate › a sign-out request climbs from under main",
+      "line": 82
+    }
+  ]
+}
