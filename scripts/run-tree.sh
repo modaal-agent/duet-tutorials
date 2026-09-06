@@ -15,6 +15,8 @@
 #   parity/scripts/apple-boundary-lane.sh   the Apple boundary + shells lane   [macos]
 #   src-ios/App/xcodegen.yml             xcodegen + xcodebuild build           [macos]
 #   src-kmp/app/build.gradle.kts         :app:testDebugUnitTest :app:assembleDebug [android]
+#                                        (the android lane runs this step ONLY; the
+#                                        toolchain gates run in the macOS job)
 #   a `-start` tree                      the ladder check against its predecessor
 #
 # Exercise stubs: every `-start` tree carries exactly one failing test, the
@@ -71,7 +73,25 @@ fi
 
 cd "$dir"
 
-# ── the toolchain gates (every lane)
+# ── the Android lane alone: the Compose app and nothing else. The toolchain
+#    gates below run in the macOS job for the same tree, and the pinned duet
+#    CLI has no Linux release asset, so an ubuntu runner would build it from
+#    source and fail on the Swift kernel's Apple frameworks.
+if [[ "$lane" == "android" ]]; then
+  if [[ -f src-kmp/app/build.gradle.kts ]]; then
+    step "Android app: unit tests + assembleDebug"
+    if [[ -z "${ANDROID_HOME:-}" && -d "$HOME/Library/Android/sdk" ]]; then
+      export ANDROID_HOME="$HOME/Library/Android/sdk"
+    fi
+    (cd src-kmp && ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain -q)
+  else
+    echo "run-tree: $tree has no Android app yet — nothing for the android lane"
+  fi
+  echo; echo "run-tree: $tree green (lane: android, stubs: $([[ $with_stubs -eq 1 ]] && echo included || echo filtered))"
+  exit 0
+fi
+
+# ── the toolchain gates (the macOS lane and the full run)
 step "tools/duet version"; tools/duet version
 step "tools/duet lint";    tools/duet lint
 step "tools/duet doctor";  tools/duet doctor
@@ -122,19 +142,15 @@ if [[ "$lane" == "all" || "$lane" == "macos" ]]; then
   fi
 fi
 
-# ── the Android lane: the Compose app
-if [[ "$lane" == "all" || "$lane" == "android" ]]; then
-  if [[ -f src-kmp/app/build.gradle.kts ]]; then
-    step "Android app: unit tests + assembleDebug"
-    # The Gradle plugin finds the SDK through ANDROID_HOME; CI's image sets
-    # it, a Mac with Android Studio has it at the default location.
-    if [[ -z "${ANDROID_HOME:-}" && -d "$HOME/Library/Android/sdk" ]]; then
-      export ANDROID_HOME="$HOME/Library/Android/sdk"
-    fi
-    (cd src-kmp && ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain -q)
-  elif [[ "$lane" == "android" ]]; then
-    echo "run-tree: $tree has no Android app yet — nothing for the android lane"
+# ── the Android app, in the full run
+if [[ "$lane" == "all" && -f src-kmp/app/build.gradle.kts ]]; then
+  step "Android app: unit tests + assembleDebug"
+  # The Gradle plugin finds the SDK through ANDROID_HOME; CI's image sets
+  # it, a Mac with Android Studio has it at the default location.
+  if [[ -z "${ANDROID_HOME:-}" && -d "$HOME/Library/Android/sdk" ]]; then
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
   fi
+  (cd src-kmp && ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain -q)
 fi
 
 echo; echo "run-tree: $tree green (lane: $lane, stubs: $([[ $with_stubs -eq 1 ]] && echo included || echo filtered))"
