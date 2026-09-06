@@ -1,0 +1,4 @@
+# The duet CLI version this repo verifies with — tools/duet's pin. A tag,
+# never a branch: which toolchain runs the gate travels in commits, so a
+# check that arrives in a later minor cannot turn this repo red on its own.
+0.24.0

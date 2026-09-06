@@ -1,0 +1,25 @@
+# The feature-parity manifest. Every feature declares its one commonMain
+# implementation, the scenario its fixtures are compiled from (fixtures are
+# build products of `tools/duet record` — never edited by hand), and the
+# fixtures that pin its behavior. The `duet` CLI is this file's only parser
+# (grammar: the toolchain's contracts/manifest.md); unknown top-level keys are
+# an error, and the indentation shape is part of the grammar.
+
+features:
+  splash:
+    kotlin: src-kmp/subtrees/splash/logic/src/commonMain/kotlin/dev/modaal/foyer/splash/SplashFeature.kt
+    state: SplashState
+    action: SplashAction
+    effectPayload: SplashEffectPayload
+    scenario: src-kmp/subtrees/splash/logic/src/jvmTest/kotlin/dev/modaal/foyer/splash/SplashScenarioTest.kt
+    fixtures:
+      - splash.ceremony-completes
+      - splash.safety-net-fires
+      - splash.both-paths-notify-twice
+      - splash.repeat-appear-inert
+
+chains:
+
+presentation:
+  waivers: []
+  islands: []

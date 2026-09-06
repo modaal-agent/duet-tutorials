@@ -22,13 +22,18 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-FENCE = re.compile(r"^```([^\n]*)\n(.*?)^```[ \t]*$", re.MULTILINE | re.DOTALL)
+# A fence may be indented (inside a <Step> or a <Tab>); the body is compared
+# with the fence's own indentation removed from every line.
+FENCE = re.compile(r"^([ \t]*)```([^\n]*)\n(.*?)^\1```[ \t]*$", re.MULTILINE | re.DOTALL)
 TITLE = re.compile(r'title="([^"]+)"')
 
 
 def blocks(page: Path):
     for match in FENCE.finditer(page.read_text()):
-        info, body = match.group(1).strip(), match.group(2)
+        indent, info = match.group(1), match.group(2).strip()
+        body = "\n".join(
+            line[len(indent):] if line.startswith(indent) else line
+            for line in match.group(3).split("\n"))
         path = None
         title = TITLE.search(info)
         if title:
@@ -58,7 +63,9 @@ def check(docs: Path, n: int) -> int:
         return 1
     failures = 0
     for page in pages:
+        checked = 0
         for line, path, body in blocks(page):
+            checked += 1
             target = tree / path
             if not target.is_file():
                 print(f"{page}:{line}: names {tree.name}/{path}, which does not exist")
@@ -67,8 +74,11 @@ def check(docs: Path, n: int) -> int:
             if normalize(body) not in normalize(target.read_text()):
                 print(f"{page}:{line}: block is not a verbatim excerpt of {tree.name}/{path}")
                 failures += 1
-        print(f"check-snippets: {page.name} against {tree.name}: "
-              f"{'ok' if failures == 0 else f'{failures} failing block(s)'}")
+        if checked == 0:
+            print(f"{page}: no fenced block names a file; nothing was checked")
+            failures += 1
+        print(f"check-snippets: {page.name} against {tree.name}: {checked} block(s), "
+              f"{'ok' if failures == 0 else f'{failures} failing'}")
     return failures
 
 

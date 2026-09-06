@@ -1,0 +1,88 @@
+{
+  "description": "The splash arms a safety net when it appears and completes by whichever path gets there first: the animation ending, or the net firing. Both paths notify the host every time; a repeat Appeared is inert.",
+  "dialect": 2,
+  "feature": "splash",
+  "initialState": {
+    "isArmed": false
+  },
+  "scenario": {
+    "branch": "both-paths-notify-twice",
+    "source": "src-kmp/subtrees/splash/logic/src/jvmTest/kotlin/dev/modaal/foyer/splash/SplashScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "id": "splash.safetyNet",
+          "kind": "run",
+          "payload": {
+            "case": "armSafetyNet",
+            "value": {
+              "afterMillis": 3000
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isArmed": true
+      },
+      "label": "the splash appears",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "ceremonyFinished"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyHost",
+            "value": {
+              "case": "completed",
+              "value": {
+                "path": {
+                  "case": "ceremony"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isArmed": true
+      },
+      "label": "both paths notify twice › the animation reaches its end",
+      "line": 60
+    },
+    {
+      "action": {
+        "case": "safetyNetElapsed"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyHost",
+            "value": {
+              "case": "completed",
+              "value": {
+                "path": {
+                  "case": "safetyNet"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isArmed": true
+      },
+      "label": "both paths notify twice › the armed delay elapses on top of it",
+      "line": 64
+    }
+  ]
+}

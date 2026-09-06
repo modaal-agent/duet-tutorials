@@ -54,6 +54,7 @@ if [[ "$tree" =~ ^tutorial([0-9]+)-start$ ]]; then
       diffs="$(diff -rq \
         --exclude=README.md --exclude=.gradle --exclude=build --exclude=.build \
         --exclude=.duet-family --exclude=.runs --exclude=.DS_Store --exclude=.kotlin \
+        --exclude='*.xcodeproj' --exclude=Info.plist --exclude=.swiftpm \
         "$ROOT/$prev" "$dir" || true)"
       unexpected="$(echo "$diffs" | grep -v '^$' | grep -vE "^Only in $dir(/[^:]*)?: .*Exercise.*" || true)"
       if [[ -n "$unexpected" ]]; then
@@ -113,8 +114,11 @@ if [[ "$lane" == "all" || "$lane" == "macos" ]]; then
     (cd src-ios/App && xcodegen generate --spec xcodegen.yml -q)
     project="$(ls -d src-ios/App/*.xcodeproj | head -1)"
     scheme="$(basename "$project" .xcodeproj)"
+    # ARCHS=arm64: the Kotlin core ships arm64 slices only, and a generic
+    # simulator destination otherwise also compiles x86_64, where the
+    # framework has no slice.
     xcodebuild build -project "$project" -scheme "$scheme" \
-      -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO
+      -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64
   fi
 fi
 
@@ -122,6 +126,11 @@ fi
 if [[ "$lane" == "all" || "$lane" == "android" ]]; then
   if [[ -f src-kmp/app/build.gradle.kts ]]; then
     step "Android app: unit tests + assembleDebug"
+    # The Gradle plugin finds the SDK through ANDROID_HOME; CI's image sets
+    # it, a Mac with Android Studio has it at the default location.
+    if [[ -z "${ANDROID_HOME:-}" && -d "$HOME/Library/Android/sdk" ]]; then
+      export ANDROID_HOME="$HOME/Library/Android/sdk"
+    fi
     (cd src-kmp && ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain -q)
   elif [[ "$lane" == "android" ]]; then
     echo "run-tree: $tree has no Android app yet — nothing for the android lane"
