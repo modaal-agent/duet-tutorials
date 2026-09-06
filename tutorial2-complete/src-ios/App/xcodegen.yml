@@ -1,0 +1,89 @@
+# The iOS app target: a generated project from a hand-edited spec. Adding or
+# removing a source file is a change to the tree and a re-run of
+# `xcodegen generate --spec xcodegen.yml`, never an edit to project.pbxproj.
+name: Foyer
+configs:
+  Debug: debug
+  Release: release
+options:
+  createIntermediateGroups: true
+  developmentLanguage: en
+  knownRegions:
+  - en
+packages:
+  # The consumer package: the Kotlin core's binary target, the bridge and the
+  # shells. Feature emission registers each new shell in its manifest, so
+  # this spec never accumulates per-feature entries.
+  FoyerKit:
+    path: ../Libraries/FoyerKit
+    group: ''
+targets:
+  Foyer:
+    type: application
+    platform: iOS
+    # Matches the consumer package's iOS floor.
+    deploymentTarget: '17.0'
+    sources:
+    - Foyer
+    info:
+      path: Foyer/Info.plist
+      properties:
+        CFBundleDisplayName: $(PRODUCT_NAME)
+        CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        # The system launch screen: no storyboard to maintain.
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+            - UISceneConfigurationName: Default Configuration
+              UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UISupportedInterfaceOrientations:
+        - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.modaal.foyer
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: '1'
+        # Complete concurrency checking, matching the package manifests.
+        SWIFT_STRICT_CONCURRENCY: complete
+        # No arch setting here on purpose. The Kotlin core ships arm64 slices
+        # only, and a generic simulator build otherwise also compiles x86_64,
+        # where the framework has no slice. `ARCHS=arm64` on the xcodebuild
+        # command line is the mechanism for a simulator build from a script.
+    dependencies:
+    - package: FoyerKit
+      product: FoyerBridge
+    - package: FoyerKit
+      product: SplashShell
+    supportedDestinations:
+    - iOS
+    preBuildScripts:
+    # The backstop for a build that runs without the app scheme. It publishes
+    # for the next build: Xcode copies the consumed .xcframework before any
+    # build phase runs. The scheme pre-action below is what reaches the build
+    # it runs in.
+    - name: Assemble FoyerKit (Kotlin core)
+      script: |
+        FLAVOR=debug
+        if [ "$CONFIGURATION" != "Debug" ]; then FLAVOR=release; fi
+        "$PROJECT_DIR/../../scripts/assemble_kit.sh" "$FLAVOR"
+      basedOnDependencyAnalysis: false
+    scheme:
+      management:
+        orderHint: 0
+      # Scheme pre-actions run before the task graph is planned, so the
+      # build links the artifact this script just published. Package
+      # resolution runs earlier still: a tree that has never assembled needs
+      # one `scripts/assemble_kit.sh debug` ahead of its first build.
+      preActions:
+      - name: Assemble FoyerKit (Kotlin core)
+        script: |
+          KIT="$PROJECT_DIR/../../scripts/assemble_kit.sh"
+          [ -x "$KIT" ] || exit 0
+          FLAVOR=debug
+          if [ "$CONFIGURATION" != "Debug" ]; then FLAVOR=release; fi
+          "$KIT" "$FLAVOR"
+        settingsTarget: Foyer

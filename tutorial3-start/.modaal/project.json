@@ -1,0 +1,27 @@
+{
+  "template": "duet-kmp",
+  "xcodegen_root": "src-ios/App",
+  "targets": {
+    "Foyer": {
+      "platform": "iOS",
+      "architecture": "duet",
+      "template": "duet-kmp",
+      "pair": "Foyer",
+      "deviceTypes": ["iPhone"],
+      "iphoneOrientations": ["UIInterfaceOrientationPortrait"]
+    },
+    "FoyerAndroid": {
+      "platform": "Android",
+      "architecture": "duet",
+      "template": "duet-kmp",
+      "pair": "Foyer",
+      "androidOrientations": ["Portrait"]
+    }
+  },
+  "duet": {
+    "template": "duet-kmp",
+    "flavor": "kmp",
+    "projectName": "Foyer",
+    "kotlinPackage": "dev.modaal.foyer"
+  }
+}
