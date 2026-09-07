@@ -22,7 +22,11 @@ passes its own checks.
 | `tutorial4-complete` | [Tutorial 4: Workers](https://docs.modaal.dev/tutorials/duet-04-workers) |
 | `tutorial5-start` | [Tutorial 5: Navigation as State](https://docs.modaal.dev/tutorials/duet-05-navigation-as-state) |
 | `tutorial5-complete` | [Tutorial 5: Navigation as State](https://docs.modaal.dev/tutorials/duet-05-navigation-as-state) |
-| `tutorial6-start` | Tutorial 6: The Checks in CI (page not yet published) |
+| `tutorial6-start` | [Tutorial 6: The Checks in CI](https://docs.modaal.dev/tutorials/duet-06-checks-in-ci) |
+| `tutorial6-complete` | [Tutorial 6: The Checks in CI](https://docs.modaal.dev/tutorials/duet-06-checks-in-ci) |
+| `tutorial7-start` | Tutorial 7: Theming with Design Tokens (page not yet published) |
+| `tutorial8-start` | Tutorial 8: Localizing the App (page not yet published) |
+| `tutorial9-start` | Tutorial 9: Adding Analytics (page not yet published) |
 
 ## Running a tree's checks
 

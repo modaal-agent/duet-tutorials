@@ -1,0 +1,60 @@
+{
+  "chain": "onboarding-name",
+  "description": "The name step's Continued crosses into the onboarding level as Name(event); the level keeps the name and mounts the preferences step.",
+  "dialect": 2,
+  "initialStates": {
+    "name": {
+      "draft": "Ann",
+      "isReady": true
+    },
+    "onboarding": {
+      "page": "name",
+      "preferences": []
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/onboarding/logic/src/jvmTest/kotlin/dev/modaal/foyer/onboarding/OnboardingStepsChainTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "continued",
+              "value": {
+                "name": "Ann"
+              }
+            }
+          }
+        }
+      ],
+      "label": "Continue on a valid name",
+      "line": 58,
+      "linkToNext": true,
+      "node": "name"
+    },
+    {
+      "action": {
+        "case": "name",
+        "value": {
+          "event": {
+            "case": "continued",
+            "value": {
+              "name": "Ann"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the step's delegate is the level's action",
+      "line": 64,
+      "node": "onboarding"
+    }
+  ]
+}

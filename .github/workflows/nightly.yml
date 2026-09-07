@@ -39,7 +39,11 @@ jobs:
         if: steps.tree.outputs.present == 'true'
         run: |
           cd tutorial6-complete
-          tools/duet mutate
+          tools/duet mutate | tee mutate.log
+      # The receipt table the drill prints, on the run's summary page.
+      - name: receipt
+        if: always() && steps.tree.outputs.present == 'true'
+        run: grep '^|' tutorial6-complete/mutate.log >> "$GITHUB_STEP_SUMMARY" || true
       - name: held
         if: steps.tree.outputs.present != 'true'
         run: echo "tutorial6-complete carries no parity/mutations.json yet — the drill is held"

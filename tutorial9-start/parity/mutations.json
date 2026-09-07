@@ -1,0 +1,25 @@
+{
+  "mutations": [
+    {
+      "name": "splash-arming-guard",
+      "file": "src-kmp/subtrees/splash/logic/src/commonMain/kotlin/dev/modaal/foyer/splash/SplashFeature.kt",
+      "old": "if (state.isArmed) {",
+      "new": "if (false) {",
+      "seeds": "every Appeared arms a new safety net; a splash that reappears fires twice"
+    },
+    {
+      "name": "root-splash-hold",
+      "file": "src-kmp/subtrees/root/logic/src/commonMain/kotlin/dev/modaal/foyer/root/RootFeature.kt",
+      "old": "next.awaitingAuth && action.auth != AuthSnapshot.Unknown ->",
+      "new": "action.auth != AuthSnapshot.Unknown ->",
+      "seeds": "the session's first report moves the phase while the splash is still on screen"
+    },
+    {
+      "name": "root-late-signin-guard",
+      "file": "src-kmp/subtrees/root/logic/src/commonMain/kotlin/dev/modaal/foyer/root/RootFeature.kt",
+      "old": "if (state.phase != RootPhase.SignIn) {",
+      "new": "if (state.phase == RootPhase.Splash) {",
+      "seeds": "a sign-in completion that arrives after the gate is gone re-enters a phase and replaces the session"
+    }
+  ]
+}

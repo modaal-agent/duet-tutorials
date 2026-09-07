@@ -1,0 +1,66 @@
+{
+  "description": "The name step validates every edit with the editor's rule, publishes its readiness on the lateral seam when it changes, climbs the trimmed name on Continue, and refuses an empty or over-long draft with the message the editor shows.",
+  "dialect": 2,
+  "feature": "name",
+  "initialState": {
+    "draft": "",
+    "isReady": false
+  },
+  "scenario": {
+    "branch": "continue-climbs",
+    "source": "src-kmp/subtrees/name/logic/src/jvmTest/kotlin/dev/modaal/foyer/name/NameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": " Ann B "
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "name"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isReady": true
+      },
+      "label": "continue climbs › a name with spaces around it",
+      "line": 50
+    },
+    {
+      "action": {
+        "case": "continueTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "continued",
+              "value": {
+                "name": "Ann B"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": " Ann B ",
+        "isReady": true
+      },
+      "label": "continue climbs › Continue",
+      "line": 51
+    }
+  ]
+}

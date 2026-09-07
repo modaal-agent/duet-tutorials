@@ -1,0 +1,82 @@
+{
+  "description": "The name step validates every edit with the editor's rule, publishes its readiness on the lateral seam when it changes, climbs the trimmed name on Continue, and refuses an empty or over-long draft with the message the editor shows.",
+  "dialect": 2,
+  "feature": "name",
+  "initialState": {
+    "draft": "",
+    "isReady": false
+  },
+  "scenario": {
+    "branch": "valid-draft-publishes-readiness",
+    "source": "src-kmp/subtrees/name/logic/src/jvmTest/kotlin/dev/modaal/foyer/name/NameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "A"
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "name"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": "A",
+        "isReady": true
+      },
+      "label": "valid draft publishes readiness › a letter is typed",
+      "line": 31
+    },
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "Ann"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "Ann",
+        "isReady": true
+      },
+      "label": "valid draft publishes readiness › more letters",
+      "line": 34
+    },
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": ""
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": false,
+              "step": "name"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": "",
+        "isReady": false
+      },
+      "label": "valid draft publishes readiness › the field is cleared",
+      "line": 36
+    }
+  ]
+}
