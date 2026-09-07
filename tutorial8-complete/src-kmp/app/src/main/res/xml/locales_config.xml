@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The languages the app ships, for the per-app language setting Android 13
+     and later show under Settings. A values-<lang>/ directory without a row
+     here still resolves when the system language matches; it just cannot be
+     chosen for this app alone. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+  <locale android:name="en" />
+  <locale android:name="de" />
+</locale-config>

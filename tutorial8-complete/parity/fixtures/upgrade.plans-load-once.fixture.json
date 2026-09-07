@@ -1,0 +1,112 @@
+{
+  "description": "The upgrade flow loads its plans once, walks plans to confirm to done as route state with Back as an action, buys one plan at a time through the purchases port, shows a refusal on the confirm step, and completes or dismisses through its delegate. It never writes an entitlement.",
+  "dialect": 2,
+  "feature": "upgrade",
+  "initialState": {
+    "isPurchasing": false,
+    "offers": [],
+    "step": {
+      "case": "plans"
+    }
+  },
+  "scenario": {
+    "branch": "plans-load-once",
+    "source": "src-kmp/subtrees/upgrade/logic/src/jvmTest/kotlin/dev/modaal/foyer/upgrade/UpgradeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadPlans"
+          }
+        }
+      ],
+      "expectedState": {
+        "isPurchasing": false,
+        "offers": [],
+        "step": {
+          "case": "plans"
+        }
+      },
+      "label": "the flow appears",
+      "line": 32
+    },
+    {
+      "action": {
+        "case": "plansLoaded",
+        "value": {
+          "offers": [
+            {
+              "plan": {
+                "case": "monthly"
+              },
+              "price": "$4.99"
+            },
+            {
+              "plan": {
+                "case": "yearly"
+              },
+              "price": "$39.99"
+            }
+          ]
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isPurchasing": false,
+        "offers": [
+          {
+            "plan": {
+              "case": "monthly"
+            },
+            "price": "$4.99"
+          },
+          {
+            "plan": {
+              "case": "yearly"
+            },
+            "price": "$39.99"
+          }
+        ],
+        "step": {
+          "case": "plans"
+        }
+      },
+      "label": "the port lists its plans",
+      "line": 36
+    },
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isPurchasing": false,
+        "offers": [
+          {
+            "plan": {
+              "case": "monthly"
+            },
+            "price": "$4.99"
+          },
+          {
+            "plan": {
+              "case": "yearly"
+            },
+            "price": "$39.99"
+          }
+        ],
+        "step": {
+          "case": "plans"
+        }
+      },
+      "label": "plans load once › the flow appears again",
+      "line": 42
+    }
+  ]
+}

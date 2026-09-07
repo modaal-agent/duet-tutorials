@@ -1,0 +1,87 @@
+{
+  "chain": "upgrade-entitlement",
+  "description": "The flow's Completed crosses into the main level as Upgrade(event), which clears the sheet and climbs nothing; the home tab stays locked until the entitlement stream's value reaches it as the root's slice.",
+  "dialect": 2,
+  "initialStates": {
+    "home": {
+      "entitlement": {
+        "case": "free"
+      },
+      "isLoading": false,
+      "items": []
+    },
+    "main": {
+      "activeTab": {
+        "case": "home"
+      },
+      "sheet": {
+        "case": "upgrade"
+      }
+    },
+    "upgrade": {
+      "isPurchasing": false,
+      "offers": [],
+      "step": {
+        "case": "done"
+      }
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainUpgradeEntitlementChainTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "doneTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed"
+            }
+          }
+        }
+      ],
+      "label": "Done on the last step",
+      "line": 77,
+      "linkToNext": true,
+      "node": "upgrade"
+    },
+    {
+      "action": {
+        "case": "upgrade",
+        "value": {
+          "event": {
+            "case": "completed"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the flow's delegate is the main level's action",
+      "line": 83,
+      "node": "main"
+    },
+    {
+      "action": {
+        "case": "entitlementChanged",
+        "value": {
+          "entitlement": {
+            "case": "premium",
+            "value": {
+              "plan": {
+                "case": "monthly"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "label": "the entitlement stream's value arrives as the root's slice",
+      "line": 97,
+      "node": "home"
+    }
+  ]
+}

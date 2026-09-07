@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "duet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/modaal-agent/duet.git",
+      "state" : {
+        "revision" : "69bd3b0d8c578a4a75f078767fbb84375a1975be",
+        "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "xcstrings-tool-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/liamnichols/xcstrings-tool-plugin.git",
+      "state" : {
+        "revision" : "bebb29f791e92f6ee5d9b6200f89c45249149957",
+        "version" : "1.2.0"
+      }
+    }
+  ],
+  "version" : 2
+}

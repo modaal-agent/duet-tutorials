@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every string the Compose screens show, in the source language. A screen
+     names a resource; a translation is another values-<lang>/ directory with
+     the same names. The state never carries one of these. -->
+<resources>
+  <string name="app_name">Foyer</string>
+  <string name="splash_tagline">One core, two apps</string>
+  <string name="sign_in_failure_empty_address">Enter an email address.</string>
+  <string name="sign_in_failure_no_account">No account for that address.</string>
+  <string name="sign_in_title">Sign in to continue</string>
+  <string name="sign_in_email">Email</string>
+  <string name="sign_in_continue_with_email">Continue with email</string>
+  <string name="sign_in_continue_as_guest">Continue as guest</string>
+  <string name="home_title">Home</string>
+  <string name="insights_title">Insights</string>
+  <string name="insights_locked">Premium</string>
+  <string name="insights_teaser">Your week at a glance</string>
+  <string name="insights_locked_description">Locked</string>
+  <string name="promo_title">Unlock Insights</string>
+  <string name="promo_body">Your week at a glance, every week.</string>
+  <string name="promo_see_plans">See plans</string>
+  <string name="not_now">Not now</string>
+  <string name="back">Back</string>
+  <string name="insight_items_read">Items read this week</string>
+  <string name="insight_longest_streak">Longest streak</string>
+  <string name="insight_most_read">Most read</string>
+  <string name="insight_reading_list">Reading list</string>
+  <string name="validation_empty">Enter a name.</string>
+  <string name="validation_too_long">Keep it to 40 characters or fewer.</string>
+  <string name="edit_name_title">Edit name</string>
+  <string name="display_name">Display name</string>
+  <string name="cancel">Cancel</string>
+  <string name="save">Save</string>
+  <string name="account_title">Account</string>
+  <string name="account_edit_name">Edit name</string>
+  <string name="sign_out">Sign out</string>
+  <string name="signing_out">Signing out…</string>
+  <string name="profile_title">Profile</string>
+  <string name="profile_plan">Plan</string>
+  <string name="profile_account">Account</string>
+  <string name="profile_account_detail">Name and sign-out</string>
+  <string name="plan_free">Free</string>
+  <string name="plan_premium_monthly">Premium · Monthly</string>
+  <string name="plan_premium_yearly">Premium · Yearly</string>
+  <string name="upgrade_failure_declined">Payment declined.</string>
+  <string name="upgrade_choose_plan">Choose a plan</string>
+  <string name="plan_monthly">Monthly</string>
+  <string name="plan_yearly">Yearly</string>
+  <string name="upgrade_confirm_plan">Confirm %1$s</string>
+  <string name="upgrade_billed_monthly">%1$s, billed every month.</string>
+  <string name="upgrade_billed_yearly">%1$s, billed once a year.</string>
+  <string name="upgrade_purchasing">Purchasing…</string>
+  <string name="upgrade_confirm">Confirm</string>
+  <string name="upgrade_premium_title">You\'re Premium</string>
+  <string name="upgrade_premium_body">Insights is unlocked.</string>
+  <string name="done">Done</string>
+  <string name="tab_home">Home</string>
+  <string name="tab_profile">Profile</string>
+  <string name="onboarding_step_of">Step %1$d of %2$d</string>
+  <string name="onboarding_step_ready">Step %1$d ready</string>
+  <string name="onboarding_step_not_ready">Step %1$d not ready</string>
+  <string name="welcome_title">Welcome to Foyer</string>
+  <string name="welcome_body">Three short steps and you are in.</string>
+  <string name="action_continue">Continue</string>
+  <string name="name_title">What should we call you?</string>
+  <string name="preferences_title">Pick at least one</string>
+  <string name="finish">Finish</string>
+  <string name="preference_digest">Weekly digest</string>
+  <string name="preference_reminders">Reminders</string>
+  <string name="preference_tips">Tips and tricks</string>
+  <plurals name="streak_days">
+    <item quantity="one">%1$d day</item>
+    <item quantity="other">%1$d days</item>
+  </plurals>
+</resources>

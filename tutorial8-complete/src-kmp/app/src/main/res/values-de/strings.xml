@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German. Every name in values/strings.xml, translated; the test
+     TranslationsCompleteTest holds the two files to the same names and
+     placeholders. -->
+<resources>
+  <string name="app_name">Foyer</string>
+  <string name="splash_tagline">Ein Kern, zwei Apps</string>
+  <string name="sign_in_failure_empty_address">Gib eine E-Mail-Adresse ein.</string>
+  <string name="sign_in_failure_no_account">Kein Konto für diese Adresse.</string>
+  <string name="sign_in_title">Melde dich an, um fortzufahren</string>
+  <string name="sign_in_email">E-Mail</string>
+  <string name="sign_in_continue_with_email">Mit E-Mail fortfahren</string>
+  <string name="sign_in_continue_as_guest">Als Gast fortfahren</string>
+  <string name="home_title">Start</string>
+  <string name="insights_title">Einblicke</string>
+  <string name="insights_locked">Premium</string>
+  <string name="insights_teaser">Deine Woche auf einen Blick</string>
+  <string name="insights_locked_description">Gesperrt</string>
+  <string name="promo_title">Einblicke freischalten</string>
+  <string name="promo_body">Deine Woche auf einen Blick, jede Woche.</string>
+  <string name="promo_see_plans">Tarife ansehen</string>
+  <string name="not_now">Jetzt nicht</string>
+  <string name="back">Zurück</string>
+  <string name="insight_items_read">Diese Woche gelesen</string>
+  <string name="insight_longest_streak">Längste Serie</string>
+  <string name="insight_most_read">Am meisten gelesen</string>
+  <string name="insight_reading_list">Leseliste</string>
+  <string name="validation_empty">Gib einen Namen ein.</string>
+  <string name="validation_too_long">Höchstens 40 Zeichen.</string>
+  <string name="edit_name_title">Name bearbeiten</string>
+  <string name="display_name">Anzeigename</string>
+  <string name="cancel">Abbrechen</string>
+  <string name="save">Speichern</string>
+  <string name="account_title">Konto</string>
+  <string name="account_edit_name">Name bearbeiten</string>
+  <string name="sign_out">Abmelden</string>
+  <string name="signing_out">Wird abgemeldet…</string>
+  <string name="profile_title">Profil</string>
+  <string name="profile_plan">Tarif</string>
+  <string name="profile_account">Konto</string>
+  <string name="profile_account_detail">Name und Abmeldung</string>
+  <string name="plan_free">Kostenlos</string>
+  <string name="plan_premium_monthly">Premium · Monatlich</string>
+  <string name="plan_premium_yearly">Premium · Jährlich</string>
+  <string name="upgrade_failure_declined">Zahlung abgelehnt.</string>
+  <string name="upgrade_choose_plan">Wähle einen Tarif</string>
+  <string name="plan_monthly">Monatlich</string>
+  <string name="plan_yearly">Jährlich</string>
+  <string name="upgrade_confirm_plan">%1$s bestätigen</string>
+  <string name="upgrade_billed_monthly">%1$s, monatlich abgerechnet.</string>
+  <string name="upgrade_billed_yearly">%1$s, einmal jährlich abgerechnet.</string>
+  <string name="upgrade_purchasing">Wird gekauft…</string>
+  <string name="upgrade_confirm">Bestätigen</string>
+  <string name="upgrade_premium_title">Du bist Premium</string>
+  <string name="upgrade_premium_body">Einblicke ist freigeschaltet.</string>
+  <string name="done">Fertig</string>
+  <string name="tab_home">Start</string>
+  <string name="tab_profile">Profil</string>
+  <string name="onboarding_step_of">Schritt %1$d von %2$d</string>
+  <string name="onboarding_step_ready">Schritt %1$d bereit</string>
+  <string name="onboarding_step_not_ready">Schritt %1$d nicht bereit</string>
+  <string name="welcome_title">Willkommen bei Foyer</string>
+  <string name="welcome_body">Drei kurze Schritte, und du bist drin.</string>
+  <string name="action_continue">Weiter</string>
+  <string name="name_title">Wie sollen wir dich nennen?</string>
+  <string name="preferences_title">Wähle mindestens eins</string>
+  <string name="finish">Abschließen</string>
+  <string name="preference_digest">Wöchentliche Zusammenfassung</string>
+  <string name="preference_reminders">Erinnerungen</string>
+  <string name="preference_tips">Tipps und Tricks</string>
+  <plurals name="streak_days">
+    <item quantity="one">%1$d Tag</item>
+    <item quantity="other">%1$d Tage</item>
+  </plurals>
+</resources>

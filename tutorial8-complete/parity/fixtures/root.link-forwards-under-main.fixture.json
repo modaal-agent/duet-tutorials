@@ -1,0 +1,131 @@
+{
+  "description": "The root mounts one child from its phase. A finished splash goes to the sign-in gate, the onboarding gate or main by the auth snapshot, or waits for it; the sign-in gate's completion signs the session in and picks the onboarding gate for an account that has not onboarded; the onboarding gate's completion persists the answers and mounts main; a sign-out request from under main raises the sign-in gate, and so does a session ending under a signed-in phase; a late splash completion is inert, and so is a late sign-in completion; the entitlement stream writes one value; a deep link is forwarded under main and held until main mounts otherwise.",
+  "dialect": 2,
+  "feature": "root",
+  "initialState": {
+    "auth": {
+      "case": "unknown"
+    },
+    "awaitingAuth": false,
+    "entitlement": {
+      "case": "free"
+    },
+    "phase": {
+      "case": "splash"
+    }
+  },
+  "scenario": {
+    "branch": "link-forwards-under-main",
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "authChanged",
+        "value": {
+          "auth": {
+            "case": "signedIn",
+            "value": {
+              "displayName": "ann",
+              "hasOnboarded": true
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann",
+            "hasOnboarded": true
+          }
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "splash"
+        }
+      },
+      "label": "link forwards under main › the host reports an onboarded session",
+      "line": 158
+    },
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann",
+            "hasOnboarded": true
+          }
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "main"
+        }
+      },
+      "label": "link forwards under main › the splash completes",
+      "line": 159
+    },
+    {
+      "action": {
+        "case": "deepLink",
+        "value": {
+          "link": {
+            "case": "upgrade"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "forwardLink",
+            "value": {
+              "link": {
+                "case": "upgrade"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann",
+            "hasOnboarded": true
+          }
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "main"
+        }
+      },
+      "label": "link forwards under main › the shell hands over the upgrade link",
+      "line": 160
+    }
+  ]
+}
