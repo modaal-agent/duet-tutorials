@@ -1,0 +1,49 @@
+{
+  "description": "The progress row subscribes to the readiness seam once, on its first appearance; the page arrives as the level's projection and each step's readiness arrives laterally, and the row writes both as they come.",
+  "dialect": 2,
+  "feature": "progress",
+  "initialState": {
+    "isObserving": false,
+    "page": "welcome",
+    "readiness": {}
+  },
+  "scenario": {
+    "branch": "appearance-observes-once",
+    "source": "src-kmp/subtrees/progress/logic/src/jvmTest/kotlin/dev/modaal/foyer/progress/ProgressScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "observeReadiness"
+          }
+        }
+      ],
+      "expectedState": {
+        "isObserving": true,
+        "page": "welcome",
+        "readiness": {}
+      },
+      "label": "appearance observes once › the row appears",
+      "line": 29
+    },
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isObserving": true,
+        "page": "welcome",
+        "readiness": {}
+      },
+      "label": "appearance observes once › the row appears again",
+      "line": 35
+    }
+  ]
+}

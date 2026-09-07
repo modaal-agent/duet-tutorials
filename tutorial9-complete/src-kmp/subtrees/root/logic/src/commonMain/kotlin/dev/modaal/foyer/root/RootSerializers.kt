@@ -1,0 +1,55 @@
+// Copyright (c) 2026 Modaal.dev
+// Licensed under the MIT License. See LICENSE file for details.
+
+package dev.modaal.foyer.root
+
+import dev.modaal.duet.kernel.serialization.CanonicalSumSerializer
+
+object RootPhaseSerializer :
+  CanonicalSumSerializer<RootPhase>(
+    "RootPhase",
+    listOf(
+      case(RootPhase.Splash::class, RootPhase.Splash.serializer()),
+      case(RootPhase.SignIn::class, RootPhase.SignIn.serializer()),
+      case(RootPhase.Onboarding::class, RootPhase.Onboarding.serializer()),
+      case(RootPhase.Main::class, RootPhase.Main.serializer()),
+    ))
+
+object AuthSnapshotSerializer :
+  CanonicalSumSerializer<AuthSnapshot>(
+    "AuthSnapshot",
+    listOf(
+      case(AuthSnapshot.Unknown::class, AuthSnapshot.Unknown.serializer()),
+      case(AuthSnapshot.SignedOut::class, AuthSnapshot.SignedOut.serializer()),
+      case(AuthSnapshot.SignedIn::class, AuthSnapshot.SignedIn.serializer()),
+    ))
+
+object RootActionSerializer :
+  CanonicalSumSerializer<RootAction>(
+    "RootAction",
+    listOf(
+      case(RootAction.Splash::class, RootAction.Splash.serializer()),
+      case(RootAction.SignIn::class, RootAction.SignIn.serializer()),
+      case(RootAction.Onboarding::class, RootAction.Onboarding.serializer()),
+      case(RootAction.Main::class, RootAction.Main.serializer()),
+      case(RootAction.AuthChanged::class, RootAction.AuthChanged.serializer()),
+      case(RootAction.EntitlementChanged::class, RootAction.EntitlementChanged.serializer()),
+      case(RootAction.DeepLink::class, RootAction.DeepLink.serializer()),
+    ))
+
+object RootEffectPayloadSerializer :
+  CanonicalSumSerializer<RootEffectPayload>(
+    "RootEffectPayload",
+    listOf(
+      case(RootEffectPayload.ForwardLink::class, RootEffectPayload.ForwardLink.serializer()),
+      case(RootEffectPayload.CompleteOnboarding::class, RootEffectPayload.CompleteOnboarding.serializer()),
+      case(RootEffectPayload.Track::class, RootEffectPayload.Track.serializer()),
+    ))
+
+object ProfilePathSerializer :
+  CanonicalSumSerializer<ProfilePath>(
+    "ProfilePath",
+    listOf(
+      case(ProfilePath.Account::class, ProfilePath.Account.serializer()),
+      case(ProfilePath.EditName::class, ProfilePath.EditName.serializer()),
+    ))
