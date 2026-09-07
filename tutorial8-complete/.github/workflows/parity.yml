@@ -143,13 +143,16 @@ jobs:
       - name: apple boundary + shells lane
         run: parity/scripts/apple-boundary-lane.sh
 
-      # ARCHS=arm64: the core ships arm64 slices only.
+      # ARCHS=arm64: the core ships arm64 slices only. The validation skip:
+      # the string-catalog generator is a build-tool plugin, and Xcode trusts
+      # a plugin interactively — a runner has no one to click.
       - name: iOS app build
         run: |
           brew install xcodegen
           (cd src-ios/App && xcodegen generate --spec xcodegen.yml -q)
           xcodebuild build -project src-ios/App/Foyer.xcodeproj -scheme Foyer \
-            -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64
+            -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64 \
+            -skipPackagePluginValidation -skipMacroValidation
 
       - name: Save the Kotlin/Native toolchain
         if: (success() || failure()) && steps.konan.outputs.cache-hit != 'true'
