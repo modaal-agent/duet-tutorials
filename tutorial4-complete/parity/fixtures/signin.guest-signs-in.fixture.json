@@ -1,0 +1,74 @@
+{
+  "description": "The gate sends one sign-in at a time to the auth port, rejects an empty address before it reaches the port, and completes with a display name: the account's saved one, or one derived from the provider.",
+  "dialect": 2,
+  "feature": "signin",
+  "initialState": {
+    "isSigningIn": false
+  },
+  "scenario": {
+    "branch": "guest-signs-in",
+    "source": "src-kmp/subtrees/signin/logic/src/jvmTest/kotlin/dev/modaal/foyer/signin/SignInScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped",
+        "value": {
+          "provider": {
+            "case": "guest"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "signIn",
+            "value": {
+              "provider": {
+                "case": "guest"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isSigningIn": true,
+        "pending": {
+          "case": "guest"
+        }
+      },
+      "label": "guest signs in › continue as a guest",
+      "line": 51
+    },
+    {
+      "action": {
+        "case": "signInFinished",
+        "value": {
+          "outcome": {
+            "case": "signedIn"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed",
+              "value": {
+                "displayName": "Guest"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isSigningIn": false
+      },
+      "label": "guest signs in › the port signs the guest in",
+      "line": 57
+    }
+  ]
+}

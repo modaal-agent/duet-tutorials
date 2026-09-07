@@ -1,0 +1,95 @@
+{
+  "description": "The home tab loads its list once, on the first appearance; a repeat appearance while loading or once loaded is inert. The Insights card opens the promo while the entitlement is Free and the summary once it is Premium; the promo's one tap buys the monthly plan, and the card unlocks from the entitlement stream, not from the purchase's answer.",
+  "dialect": 2,
+  "feature": "home",
+  "initialState": {
+    "entitlement": {
+      "case": "free"
+    },
+    "isLoading": false,
+    "isPurchasing": false,
+    "items": []
+  },
+  "scenario": {
+    "branch": "loads-once",
+    "source": "src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadItems"
+          }
+        }
+      ],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "the tab appears",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "loads once › the tab appears again while loading",
+      "line": 40
+    },
+    {
+      "action": {
+        "case": "itemsLoaded",
+        "value": {
+          "items": [
+            {
+              "id": "1",
+              "title": "Welcome note"
+            },
+            {
+              "id": "2",
+              "title": "Getting started"
+            }
+          ]
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": false,
+        "isPurchasing": false,
+        "items": [
+          {
+            "id": "1",
+            "title": "Welcome note"
+          },
+          {
+            "id": "2",
+            "title": "Getting started"
+          }
+        ]
+      },
+      "label": "loads once › the port answers",
+      "line": 42
+    }
+  ]
+}

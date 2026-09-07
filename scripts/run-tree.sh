@@ -11,6 +11,7 @@
 #   parity/design-tokens.yaml            tools/duet design-tokens --check
 #   a `mocks:` section in the manifest   tools/duet mocks --check
 #   src-kmp/replay-runner (+ a feature)  the protocol lane
+#   src-kmp/backend-local                ./gradlew :backend-local:jvmTest
 #   src-kmp/telemetry                    ./gradlew :telemetry:jvmTest
 #   parity/scripts/apple-boundary-lane.sh   the Apple boundary + shells lane   [macos]
 #   src-ios/App/xcodegen.yml             xcodegen + xcodebuild build           [macos]
@@ -118,6 +119,11 @@ if [[ -n "$features" && -d src-kmp/replay-runner ]]; then
   step "protocol lane"
   (cd src-kmp && ./gradlew :replay-runner:installDist --console=plain -q)
   tools/duet protocol-run --runner src-kmp/replay-runner/build/install/replay-runner/bin/replay-runner
+fi
+if [[ -d src-kmp/backend-local ]]; then
+  # The on-device backend is no feature module, so `verify` never reaches
+  # its tests; the lane runs them here.
+  step "backend-local tests"; (cd src-kmp && ./gradlew :backend-local:jvmTest --console=plain -q)
 fi
 if [[ -d src-kmp/telemetry ]]; then
   step "telemetry grammar tests"; (cd src-kmp && ./gradlew :telemetry:jvmTest --console=plain -q)

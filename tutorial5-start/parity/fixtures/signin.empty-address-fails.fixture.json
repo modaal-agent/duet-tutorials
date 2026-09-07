@@ -1,0 +1,34 @@
+{
+  "description": "The gate sends one sign-in at a time to the auth port, rejects an empty address before it reaches the port, and completes with a display name: the account's saved one, or one derived from the provider.",
+  "dialect": 2,
+  "feature": "signin",
+  "initialState": {
+    "isSigningIn": false
+  },
+  "scenario": {
+    "branch": "empty-address-fails",
+    "source": "src-kmp/subtrees/signin/logic/src/jvmTest/kotlin/dev/modaal/foyer/signin/SignInScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped",
+        "value": {
+          "provider": {
+            "case": "email",
+            "value": {
+              "address": ""
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "failure": "Enter an email address.",
+        "isSigningIn": false
+      },
+      "label": "empty address fails › continue with an empty address",
+      "line": 64
+    }
+  ]
+}
