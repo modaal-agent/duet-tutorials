@@ -1,0 +1,72 @@
+{
+  "description": "The preferences step flips one key per toggle, is ready with at least one key on, publishes its readiness on the lateral seam when it changes, and climbs the selection on Continue; Continue with nothing on is inert.",
+  "dialect": 2,
+  "feature": "preferences",
+  "initialState": {
+    "isReady": false,
+    "selected": []
+  },
+  "scenario": {
+    "branch": "continue-climbs",
+    "source": "src-kmp/subtrees/preferences/logic/src/jvmTest/kotlin/dev/modaal/foyer/preferences/PreferencesScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "reminders"
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "preferences"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isReady": true,
+        "selected": [
+          "reminders"
+        ]
+      },
+      "label": "continue climbs › the reminders toggle",
+      "line": 51
+    },
+    {
+      "action": {
+        "case": "continueTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "continued",
+              "value": {
+                "preferences": [
+                  "reminders"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isReady": true,
+        "selected": [
+          "reminders"
+        ]
+      },
+      "label": "continue climbs › Continue",
+      "line": 52
+    }
+  ]
+}

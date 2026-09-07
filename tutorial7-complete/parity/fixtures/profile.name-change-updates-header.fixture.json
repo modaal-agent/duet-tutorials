@@ -1,0 +1,59 @@
+{
+  "description": "The profile tab mounts the account screen from state, clears it on the child's Closed, refreshes its header on NameChanged, relays SignOutRequested upward, shows the projected entitlement on its plan row, asks the host for the upgrade flow from that row, and mounts the account screen from a forwarded link.",
+  "dialect": 2,
+  "feature": "profile",
+  "initialState": {
+    "displayName": "Ann",
+    "entitlement": {
+      "case": "free"
+    }
+  },
+  "scenario": {
+    "branch": "name-change-updates-header",
+    "source": "src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/dev/modaal/foyer/profile/ProfileScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "accountTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "account"
+        },
+        "displayName": "Ann",
+        "entitlement": {
+          "case": "free"
+        }
+      },
+      "label": "the Account row",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "account",
+        "value": {
+          "event": {
+            "case": "nameChanged",
+            "value": {
+              "name": "Ann B"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "account"
+        },
+        "displayName": "Ann B",
+        "entitlement": {
+          "case": "free"
+        }
+      },
+      "label": "name change updates header › the child reports a new name",
+      "line": 43
+    }
+  ]
+}
