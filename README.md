@@ -18,7 +18,9 @@ passes its own checks.
 | `tutorial2-complete` | [Tutorial 2: One Behavior, Two Apps](https://docs.modaal.dev/tutorials/duet-02-two-apps) |
 | `tutorial3-start` | [Tutorial 3: Composing Features](https://docs.modaal.dev/tutorials/duet-03-composing-features) |
 | `tutorial3-complete` | [Tutorial 3: Composing Features](https://docs.modaal.dev/tutorials/duet-03-composing-features) |
-| `tutorial4-start` | Tutorial 4: Workers (page not yet published) |
+| `tutorial4-start` | [Tutorial 4: Workers](https://docs.modaal.dev/tutorials/duet-04-workers) |
+| `tutorial4-complete` | [Tutorial 4: Workers](https://docs.modaal.dev/tutorials/duet-04-workers) |
+| `tutorial5-start` | Tutorial 5: Navigation as State (page not yet published) |
 
 ## Running a tree's checks
 

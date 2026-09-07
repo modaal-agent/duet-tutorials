@@ -7,8 +7,10 @@ into one PNG: the iPhone on the left, the Android on the right, both scaled
 to one height, on a white ground with a gutter between them.
 
     scripts/compose-pair.py <ios.png> <android.png> <out.png> [--height 1200]
+    scripts/compose-pair.py <ios.png> <android.png> <out.png> --second <ios2.png> <android2.png>
 
-Run it with `uv run scripts/compose-pair.py …` (the dependency block above
+`--second` adds a second row of the same shape under the first, for a
+four-frame pair (one state per row). Run it with `uv run scripts/compose-pair.py …` (the dependency block above
 fetches Pillow) or with any Python that has Pillow installed. The captures
 come from `xcrun simctl io booted screenshot <file>` and
 `adb exec-out screencap -p > <file>`.
@@ -36,18 +38,25 @@ def main(argv: list[str]) -> int:
     parser.add_argument("ios")
     parser.add_argument("android")
     parser.add_argument("out")
-    parser.add_argument("--height", type=int, default=1200, help="the pair's frame height in pixels")
+    parser.add_argument("--height", type=int, default=1200, help="each frame's height in pixels")
+    parser.add_argument(
+        "--second", nargs=2, metavar=("IOS2", "ANDROID2"), help="a second row: another iPhone and Android capture"
+    )
     args = parser.parse_args(argv[1:])
 
-    left = scaled(args.ios, args.height)
-    right = scaled(args.android, args.height)
+    rows = [(scaled(args.ios, args.height), scaled(args.android, args.height))]
+    if args.second:
+        rows.append((scaled(args.second[0], args.height), scaled(args.second[1], args.height)))
+    width = max(left.width + GUTTER + right.width for left, right in rows)
     canvas = Image.new(
         "RGB",
-        (MARGIN + left.width + GUTTER + right.width + MARGIN, MARGIN + args.height + MARGIN),
+        (MARGIN + width + MARGIN, MARGIN + len(rows) * args.height + (len(rows) - 1) * GUTTER + MARGIN),
         GROUND,
     )
-    canvas.paste(left, (MARGIN, MARGIN), left)
-    canvas.paste(right, (MARGIN + left.width + GUTTER, MARGIN), right)
+    for row, (left, right) in enumerate(rows):
+        top = MARGIN + row * (args.height + GUTTER)
+        canvas.paste(left, (MARGIN, top), left)
+        canvas.paste(right, (MARGIN + left.width + GUTTER, top), right)
     canvas.save(args.out, optimize=True)
     print(f"compose-pair: {args.out} {canvas.width}x{canvas.height}")
     return 0

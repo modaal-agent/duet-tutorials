@@ -1,0 +1,97 @@
+{
+  "description": "The home tab loads its list once, on the first appearance; a repeat appearance while loading or once loaded is inert. The Insights card opens the promo while the entitlement is Free and the summary once it is Premium; the promo's one tap buys the monthly plan, and the card unlocks from the entitlement stream, not from the purchase's answer.",
+  "dialect": 2,
+  "feature": "home",
+  "initialState": {
+    "entitlement": {
+      "case": "free"
+    },
+    "isLoading": false,
+    "isPurchasing": false,
+    "items": []
+  },
+  "scenario": {
+    "branch": "unlocked-card-presents-insights",
+    "source": "src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadItems"
+          }
+        }
+      ],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "the tab appears",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "entitlementChanged",
+        "value": {
+          "entitlement": {
+            "case": "premium",
+            "value": {
+              "plan": {
+                "case": "yearly"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "premium",
+          "value": {
+            "plan": {
+              "case": "yearly"
+            }
+          }
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "unlocked card presents insights › the root projects a Premium entitlement",
+      "line": 62
+    },
+    {
+      "action": {
+        "case": "insightsTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "premium",
+          "value": {
+            "plan": {
+              "case": "yearly"
+            }
+          }
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": [],
+        "presented": {
+          "case": "insights"
+        }
+      },
+      "label": "unlocked card presents insights › the Insights card, while Premium",
+      "line": 66
+    }
+  ]
+}

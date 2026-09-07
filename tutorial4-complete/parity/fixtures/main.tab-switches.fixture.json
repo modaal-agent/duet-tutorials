@@ -1,0 +1,52 @@
+{
+  "description": "The main level switches tabs and relays the profile tree's sign-out request upward unchanged.",
+  "dialect": 2,
+  "feature": "main",
+  "initialState": {
+    "activeTab": {
+      "case": "home"
+    }
+  },
+  "scenario": {
+    "branch": "tab-switches",
+    "source": "src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "tabSelected",
+        "value": {
+          "tab": {
+            "case": "profile"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "activeTab": {
+          "case": "profile"
+        }
+      },
+      "label": "tab switches › the Profile tab",
+      "line": 28
+    },
+    {
+      "action": {
+        "case": "tabSelected",
+        "value": {
+          "tab": {
+            "case": "home"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "activeTab": {
+          "case": "home"
+        }
+      },
+      "label": "tab switches › the Home tab",
+      "line": 31
+    }
+  ]
+}

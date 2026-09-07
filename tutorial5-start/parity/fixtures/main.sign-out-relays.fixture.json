@@ -1,0 +1,44 @@
+{
+  "description": "The main level switches tabs and relays the profile tree's sign-out request upward unchanged.",
+  "dialect": 2,
+  "feature": "main",
+  "initialState": {
+    "activeTab": {
+      "case": "home"
+    }
+  },
+  "scenario": {
+    "branch": "sign-out-relays",
+    "source": "src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "profile",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "signOutRequested"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "activeTab": {
+          "case": "home"
+        }
+      },
+      "label": "sign out relays › the profile tree requests a sign-out",
+      "line": 36
+    }
+  ]
+}

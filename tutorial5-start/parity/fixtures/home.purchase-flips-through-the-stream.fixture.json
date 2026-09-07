@@ -1,0 +1,176 @@
+{
+  "description": "The home tab loads its list once, on the first appearance; a repeat appearance while loading or once loaded is inert. The Insights card opens the promo while the entitlement is Free and the summary once it is Premium; the promo's one tap buys the monthly plan, and the card unlocks from the entitlement stream, not from the purchase's answer.",
+  "dialect": 2,
+  "feature": "home",
+  "initialState": {
+    "entitlement": {
+      "case": "free"
+    },
+    "isLoading": false,
+    "isPurchasing": false,
+    "items": []
+  },
+  "scenario": {
+    "branch": "purchase-flips-through-the-stream",
+    "source": "src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadItems"
+          }
+        }
+      ],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "the tab appears",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "insightsTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": [],
+        "presented": {
+          "case": "promo"
+        }
+      },
+      "label": "purchase flips through the stream › the Insights card, while Free",
+      "line": 72
+    },
+    {
+      "action": {
+        "case": "purchaseTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "purchase",
+            "value": {
+              "plan": {
+                "case": "monthly"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": true,
+        "items": [],
+        "presented": {
+          "case": "promo"
+        }
+      },
+      "label": "purchase flips through the stream › the promo's button",
+      "line": 73
+    },
+    {
+      "action": {
+        "case": "purchaseTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "isPurchasing": true,
+        "items": [],
+        "presented": {
+          "case": "promo"
+        }
+      },
+      "label": "purchase flips through the stream › a second tap while in flight",
+      "line": 78
+    },
+    {
+      "action": {
+        "case": "entitlementChanged",
+        "value": {
+          "entitlement": {
+            "case": "premium",
+            "value": {
+              "plan": {
+                "case": "monthly"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "premium",
+          "value": {
+            "plan": {
+              "case": "monthly"
+            }
+          }
+        },
+        "isLoading": true,
+        "isPurchasing": true,
+        "items": [],
+        "presented": {
+          "case": "promo"
+        }
+      },
+      "label": "purchase flips through the stream › the entitlement stream emits first",
+      "line": 80
+    },
+    {
+      "action": {
+        "case": "purchaseFinished",
+        "value": {
+          "outcome": {
+            "case": "purchased",
+            "value": {
+              "plan": {
+                "case": "monthly"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "premium",
+          "value": {
+            "plan": {
+              "case": "monthly"
+            }
+          }
+        },
+        "isLoading": true,
+        "isPurchasing": false,
+        "items": []
+      },
+      "label": "purchase flips through the stream › the port answers",
+      "line": 87
+    }
+  ]
+}
