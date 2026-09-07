@@ -1,0 +1,75 @@
+{
+  "description": "The progress row subscribes to the readiness seam once, on its first appearance; the page arrives as the level's projection and each step's readiness arrives laterally, and the row writes both as they come.",
+  "dialect": 2,
+  "feature": "progress",
+  "initialState": {
+    "isObserving": false,
+    "page": "welcome",
+    "readiness": {}
+  },
+  "scenario": {
+    "branch": "readiness-arrives-laterally",
+    "source": "src-kmp/subtrees/progress/logic/src/jvmTest/kotlin/dev/modaal/foyer/progress/ProgressScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "readinessChanged",
+        "value": {
+          "ready": true,
+          "step": "welcome"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isObserving": false,
+        "page": "welcome",
+        "readiness": {
+          "welcome": true
+        }
+      },
+      "label": "readiness arrives laterally › the seam reports the welcome step ready",
+      "line": 48
+    },
+    {
+      "action": {
+        "case": "readinessChanged",
+        "value": {
+          "ready": true,
+          "step": "name"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isObserving": false,
+        "page": "welcome",
+        "readiness": {
+          "name": true,
+          "welcome": true
+        }
+      },
+      "label": "readiness arrives laterally › the seam reports the name step ready",
+      "line": 52
+    },
+    {
+      "action": {
+        "case": "readinessChanged",
+        "value": {
+          "ready": false,
+          "step": "name"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isObserving": false,
+        "page": "welcome",
+        "readiness": {
+          "name": false,
+          "welcome": true
+        }
+      },
+      "label": "readiness arrives laterally › the seam reports the name step not ready after all",
+      "line": 55
+    }
+  ]
+}

@@ -20,7 +20,9 @@ passes its own checks.
 | `tutorial3-complete` | [Tutorial 3: Composing Features](https://docs.modaal.dev/tutorials/duet-03-composing-features) |
 | `tutorial4-start` | [Tutorial 4: Workers](https://docs.modaal.dev/tutorials/duet-04-workers) |
 | `tutorial4-complete` | [Tutorial 4: Workers](https://docs.modaal.dev/tutorials/duet-04-workers) |
-| `tutorial5-start` | Tutorial 5: Navigation as State (page not yet published) |
+| `tutorial5-start` | [Tutorial 5: Navigation as State](https://docs.modaal.dev/tutorials/duet-05-navigation-as-state) |
+| `tutorial5-complete` | [Tutorial 5: Navigation as State](https://docs.modaal.dev/tutorials/duet-05-navigation-as-state) |
+| `tutorial6-start` | Tutorial 6: The Checks in CI (page not yet published) |
 
 ## Running a tree's checks
 

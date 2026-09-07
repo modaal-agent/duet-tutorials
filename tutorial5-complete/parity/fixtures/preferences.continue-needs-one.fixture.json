@@ -1,0 +1,42 @@
+{
+  "description": "The preferences step flips one key per toggle, is ready with at least one key on, publishes its readiness on the lateral seam when it changes, and climbs the selection on Continue; Continue with nothing on is inert.",
+  "dialect": 2,
+  "feature": "preferences",
+  "initialState": {
+    "isReady": false,
+    "selected": []
+  },
+  "scenario": {
+    "branch": "continue-needs-one",
+    "source": "src-kmp/subtrees/preferences/logic/src/jvmTest/kotlin/dev/modaal/foyer/preferences/PreferencesScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isReady": false,
+        "selected": []
+      },
+      "label": "continue needs one › Continue with nothing on",
+      "line": 43
+    },
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "unknown"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isReady": false,
+        "selected": []
+      },
+      "label": "continue needs one › an unknown key",
+      "line": 46
+    }
+  ]
+}
