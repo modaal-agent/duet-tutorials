@@ -1,0 +1,209 @@
+# The checks, as one workflow for a repository shaped like this tree. Every
+# step is a command you can run at the repository root; CI adds nothing the
+# local loop does not have, and a red job names the command that went red.
+#
+# Four jobs:
+#   checks   the toolchain gates on macOS: lint, doctor, verify (every lane
+#            the manifest declares, plus its meta-checks and the per-fixture
+#            coverage gate), the recording drift check, the generated-mock
+#            fingerprints, the protocol lane and the backend's own tests
+#   apple    the Apple boundary: the Kotlin core assembled into an
+#            XCFramework, the same fixtures replayed across it, the Swift
+#            shells' suites, and the iOS app built for a simulator
+#   android  the Compose app's unit tests and a debug build, on ubuntu — the
+#            hosted ubuntu image ships the Android SDK and the macOS image
+#            does not
+#   mutate   the mutation drill from parity/mutations.json, on the nightly
+#            schedule and on demand; each row is a full suite run, so it does
+#            not run per push
+#
+# The toolchain floors: Xcode 26.6 and a JDK 25, the versions the trees are
+# verified against. The duet CLI arrives through tools/duet at the version in
+# parity/duet-tools.ref; Gradle through the committed wrapper.
+name: parity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # 03:15 UTC, daily: the mutation drill.
+    - cron: "15 3 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    if: github.event_name != 'schedule'
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.6"
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # The pinned CLI: fetched once, checksum-verified, re-checked against
+      # parity/duet-tools.ref on every later call.
+      - name: tools/duet version
+        run: tools/duet version
+
+      # The manifest's grammar and every path it names.
+      - name: tools/duet lint
+        run: tools/duet lint
+
+      # The declaration file against the tree, and the worker-isolation rule.
+      - name: tools/duet doctor
+        run: tools/duet doctor
+
+      # Every lane the manifest declares — here the Kotlin lane over the
+      # fourteen logic modules — after the meta-checks, with the coverage gate:
+      # a fixture the manifest names and no lane reported is red.
+      - name: tools/duet verify
+        run: tools/duet verify
+
+      # The drift gate: the recordings on disk are what the scenarios produce
+      # today, checked per feature and per chain.
+      - name: tools/duet record --check
+        run: |
+          plan="$(tools/duet lint --json)"
+          for f in $(echo "$plan" | jq -r '.features | keys[]'); do
+            tools/duet record --feature "$f" --check
+          done
+          for c in $(echo "$plan" | jq -r '.chains[]?'); do
+            tools/duet record --chain "$c" --check
+          done
+
+      # The generated Swift components and mocks carry a fingerprint of their
+      # inputs; a stale file is red without running the generator.
+      - name: tools/duet mocks --check
+        run: tools/duet mocks --check
+
+      # The token drift gate: the vocabularies and the value tables under each
+      # target's Generated/ are build products of parity/design-tokens.yaml.
+      # Regenerated in memory and compared whole, so a hand-edit or an
+      # un-regenerated config edit is red.
+      - name: tools/duet design-tokens --check
+        run: tools/duet design-tokens --check
+
+      # The same corpus over the replay wire protocol into the Kotlin runner
+      # binary: the byte gate that does not depend on the in-process harness.
+      - name: protocol lane
+        run: |
+          (cd src-kmp && ./gradlew :replay-runner:installDist --console=plain -q)
+          tools/duet protocol-run --runner src-kmp/replay-runner/build/install/replay-runner/bin/replay-runner
+
+      # The on-device backend is not a manifest feature, so verify never
+      # reaches its tests; `tools/duet lanes` lists it under "outside the
+      # manifest" for exactly this step.
+      - name: backend-local tests
+        run: (cd src-kmp && ./gradlew :backend-local:jvmTest --console=plain -q)
+
+      # The theme tests, for the same reason: the token module is no feature
+      # module.
+      - name: theming tests
+        run: (cd src-kmp && ./gradlew :theming:jvmTest --console=plain -q)
+
+  apple:
+    if: github.event_name != 'schedule'
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.6"
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # The Kotlin/Native toolchain is a several-hundred-MB download, keyed on
+      # the version catalog. Restore and save are split so a red lane still
+      # leaves the next run warm.
+      - name: Restore the Kotlin/Native toolchain
+        id: konan
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('src-kmp/gradle/libs.versions.toml') }}
+          restore-keys: |
+            konan-${{ runner.os }}-
+
+      # Assembles the core, replays the fixtures across the boundary, runs the
+      # Swift shells' suites.
+      - name: apple boundary + shells lane
+        run: parity/scripts/apple-boundary-lane.sh
+
+      # ARCHS=arm64: the core ships arm64 slices only.
+      - name: iOS app build
+        run: |
+          brew install xcodegen
+          (cd src-ios/App && xcodegen generate --spec xcodegen.yml -q)
+          xcodebuild build -project src-ios/App/Foyer.xcodeproj -scheme Foyer \
+            -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64
+
+      - name: Save the Kotlin/Native toolchain
+        if: (success() || failure()) && steps.konan.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('src-kmp/gradle/libs.versions.toml') }}
+
+  android:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v6
+      # The route restore, the back policy and the worker tests are here.
+      - name: Android app: unit tests + assembleDebug
+        run: (cd src-kmp && ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain -q)
+
+  mutate:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Seeds each row of parity/mutations.json into the sources, runs verify,
+      # and requires it to go red; restores the file before the next row. A
+      # surviving row fails the job, and so does a stale one.
+      - name: tools/duet mutate
+        run: tools/duet mutate | tee mutate.log
+
+      # The receipt table the drill prints, on the run's summary page.
+      - name: receipt
+        if: always()
+        run: grep '^|' mutate.log >> "$GITHUB_STEP_SUMMARY" || true

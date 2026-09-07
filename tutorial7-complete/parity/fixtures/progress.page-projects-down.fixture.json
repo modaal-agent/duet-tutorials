@@ -1,0 +1,32 @@
+{
+  "description": "The progress row subscribes to the readiness seam once, on its first appearance; the page arrives as the level's projection and each step's readiness arrives laterally, and the row writes both as they come.",
+  "dialect": 2,
+  "feature": "progress",
+  "initialState": {
+    "isObserving": false,
+    "page": "welcome",
+    "readiness": {}
+  },
+  "scenario": {
+    "branch": "page-projects-down",
+    "source": "src-kmp/subtrees/progress/logic/src/jvmTest/kotlin/dev/modaal/foyer/progress/ProgressScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "pageChanged",
+        "value": {
+          "page": "name"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isObserving": false,
+        "page": "name",
+        "readiness": {}
+      },
+      "label": "page projects down › the level moves to the name step",
+      "line": 40
+    }
+  ]
+}

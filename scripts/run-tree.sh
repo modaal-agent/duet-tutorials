@@ -13,6 +13,7 @@
 #   src-kmp/replay-runner (+ a feature)  the protocol lane
 #   src-kmp/backend-local                ./gradlew :backend-local:jvmTest
 #   src-kmp/telemetry                    ./gradlew :telemetry:jvmTest
+#   src-kmp/theming                      ./gradlew :theming:jvmTest
 #   parity/scripts/apple-boundary-lane.sh   the Apple boundary + shells lane   [macos]
 #   src-ios/App/xcodegen.yml             xcodegen + xcodebuild build           [macos]
 #   src-kmp/app/build.gradle.kts         :app:testDebugUnitTest :app:assembleDebug [android]
@@ -127,6 +128,11 @@ if [[ -d src-kmp/backend-local ]]; then
 fi
 if [[ -d src-kmp/telemetry ]]; then
   step "telemetry grammar tests"; (cd src-kmp && ./gradlew :telemetry:jvmTest --console=plain -q)
+fi
+if [[ -d src-kmp/theming ]]; then
+  # The theme tests: the token module is no feature module, so `verify`
+  # never reaches them.
+  step "theming tests"; (cd src-kmp && ./gradlew :theming:jvmTest --console=plain -q)
 fi
 
 # ── the macOS lane: the Apple boundary and the iOS app

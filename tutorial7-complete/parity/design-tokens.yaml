@@ -1,0 +1,101 @@
+# The design-token config: the app's colour and type vocabularies and their
+# values, in one file. `tools/duet design-tokens` generates the vocabulary
+# enums and the value tables into both targets below; `tools/duet
+# design-tokens --check` is red while a generated file disagrees with this
+# one. The grammar is the toolchain's contracts/design-tokens.md.
+#
+# A view names a token by what it means (`cardSurface`, `labelLocked`); the
+# theme names the value. The main theme reads the values below directly; the
+# high-contrast theme is a mapping over the same vocabulary, hand-authored in
+# each language beside the generated files, and carries no value of its own.
+
+version: 1
+
+swift:
+  output: src-ios/Libraries/FoyerKit/Sources/Theming/Generated
+  engine: DuetTheming
+  theme: MainTheme
+
+kotlin:
+  output: src-kmp/theming/src/commonMain/kotlin/dev/modaal/foyer/theming/Generated
+  package: dev.modaal.foyer.theming
+  engine: dev.modaal.duet.services.theming
+  palette: MainPalette
+
+colors:
+  - group: Surfaces
+    tokens:
+      - name: surface
+        doc: >-
+          The page. In the high-contrast theme every card sits directly on
+          it.
+        light: "#FFFFFF"
+        dark: "#121212"
+      - name: cardSurface
+        doc: >-
+          The ground of a card: the Insights card and the plan cards.
+        light: "#F1F1EE"
+        dark: "#262626"
+      - name: lockedSurface
+        doc: >-
+          The ground of the Insights card while the entitlement is Free.
+        note: >-
+          A warm wash rather than a grey: the locked state is a state of the
+          card, and a colour the eye reads before the lock glyph does.
+        light: "#FBF3DC"
+        dark: "#3B3320"
+
+  - group: Labels
+    tokens:
+      - name: labelPrimary
+        doc: >-
+          Titles on cards: the card's name, the plan's name and price.
+        light: "#1A1A1A"
+        dark: "#EDEDED"
+      - name: labelSecondary
+        doc: >-
+          Supporting text on cards, one step down: the teaser under the
+          card's name.
+        light: "#6A6A6A"
+        dark: "#9C9C9C"
+      - name: labelLocked
+        doc: >-
+          The lock glyph and the word under a locked card's name.
+        light: "#7A5C0A"
+        dark: "#E5C15C"
+
+  - group: Chrome
+    tokens:
+      - name: cardBorder
+        doc: >-
+          The hairline around every card.
+        note: >-
+          Translucent, so it reads as a tint of whichever surface the card sits
+          on; the high-contrast theme maps it onto the primary label, which
+          makes it a solid line of ink.
+        light: "#1A1A1A"
+        lightAlpha: 0.12
+        dark: "#EDEDED"
+        darkAlpha: 0.16
+
+fonts:
+  - group: The two card styles
+    tokens:
+      - name: cardTitle
+        doc: >-
+          The card's name, and the plan's name and price.
+        family: sans
+        weight: 600
+        size: 17
+        lineHeight: 22
+        swift:
+          textStyle: headline
+      - name: cardBody
+        doc: >-
+          The teaser under a card's name.
+        family: sans
+        weight: 400
+        size: 15
+        lineHeight: 20
+        swift:
+          textStyle: subheadline
