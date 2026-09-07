@@ -149,8 +149,13 @@ if [[ "$lane" == "all" || "$lane" == "macos" ]]; then
     # ARCHS=arm64: the Kotlin core ships arm64 slices only, and a generic
     # simulator destination otherwise also compiles x86_64, where the
     # framework has no slice.
+    # A tree that links a build-tool plugin (Tutorial 8's string-catalog
+    # generator) fails on a fresh machine without the validation skip: a
+    # plugin is trusted interactively in Xcode, and a CI runner has no one to
+    # click. The flag is inert for a tree with no plugin.
     xcodebuild build -project "$project" -scheme "$scheme" \
-      -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64
+      -destination 'generic/platform=iOS Simulator' -quiet CODE_SIGNING_ALLOWED=NO ARCHS=arm64 \
+      -skipPackagePluginValidation -skipMacroValidation
   fi
 fi
 
