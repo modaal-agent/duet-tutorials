@@ -26,7 +26,8 @@ passes its own checks.
 | `tutorial6-complete` | [Tutorial 6: The Checks in CI](https://docs.modaal.dev/tutorials/duet-06-checks-in-ci) |
 | `tutorial7-start` | [Tutorial 7: Theming with Design Tokens](https://docs.modaal.dev/tutorials/duet-07-theming) |
 | `tutorial7-complete` | [Tutorial 7: Theming with Design Tokens](https://docs.modaal.dev/tutorials/duet-07-theming) |
-| `tutorial8-start` | Tutorial 8: Localizing the App (page not yet published) |
+| `tutorial8-start` | [Tutorial 8: Localizing the App](https://docs.modaal.dev/tutorials/duet-08-localization) |
+| `tutorial8-complete` | [Tutorial 8: Localizing the App](https://docs.modaal.dev/tutorials/duet-08-localization) |
 | `tutorial9-start` | Tutorial 9: Adding Analytics (page not yet published) |
 
 ## Running a tree's checks

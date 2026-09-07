@@ -1,0 +1,73 @@
+{
+  "description": "The home tab loads its list once, on the first appearance; a repeat appearance while loading or once loaded is inert. The Insights card opens the promo while the entitlement is Free and the summary once it is Premium; the promo's one tap closes it and asks the host for the upgrade flow, and the card unlocks from the entitlement stream alone.",
+  "dialect": 2,
+  "feature": "home",
+  "initialState": {
+    "entitlement": {
+      "case": "free"
+    },
+    "isLoading": false,
+    "items": []
+  },
+  "scenario": {
+    "branch": "locked-card-presents-promo",
+    "source": "src-kmp/subtrees/home/logic/src/jvmTest/kotlin/dev/modaal/foyer/home/HomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "loadItems"
+          }
+        }
+      ],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "items": []
+      },
+      "label": "the tab appears",
+      "line": 32
+    },
+    {
+      "action": {
+        "case": "insightsTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "items": [],
+        "presented": {
+          "case": "promo"
+        }
+      },
+      "label": "locked card presents promo › the Insights card, while Free",
+      "line": 53
+    },
+    {
+      "action": {
+        "case": "dismissed"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "entitlement": {
+          "case": "free"
+        },
+        "isLoading": true,
+        "items": []
+      },
+      "label": "locked card presents promo › Back",
+      "line": 56
+    }
+  ]
+}

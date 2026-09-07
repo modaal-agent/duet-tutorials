@@ -1,0 +1,24 @@
+// mock-templates:fingerprint v1
+// bundle: 0.6.2
+// config: sha256:3ce3eb61d73896cda52c030daa0aee512bbda0fa5062874ce1e165f267c65304 template=Component.swifttemplate args=import=FoyerKit
+// input: sha256:bfd1f47aac4fbf7e2ca5c89bf394ebed68408db5c75af047563d006eac1f73d0 src-ios/Libraries/FoyerKit/Sources/AccountShell/AccountBuilder.swift
+// input: sha256:422874ccb540611ed2a2242775fd596110aeea6caf060df6d1dcffc2fa7d20b1 src-ios/Libraries/FoyerKit/Sources/AccountShell/AccountView.swift
+// input: sha256:d395a6c814c8ad96f213f350660901c4614caae0e78e7d9850f2817b9f7695f3 src-ios/Libraries/FoyerKit/Sources/AccountShell/AccountViewShell.swift
+// body: sha256:21e4157d31b8d7076ebe79809d37f978742aea52b03a9790370cc4cf17ce2b19
+// mock-templates:end
+// Generated using Sourcery 2.3.0 — https://github.com/krzysztofzablocki/Sourcery
+// DO NOT EDIT
+
+
+import FoyerKit
+
+// MARK: - AccountComponent
+final class AccountComponent: AccountDependency {
+    private let dependency: AccountDependency
+
+    init(dependency: AccountDependency) {
+        self.dependency = dependency
+    }
+    var account: any AccountPort { dependency.account }
+    var auth: any AuthPort { dependency.auth }
+}
