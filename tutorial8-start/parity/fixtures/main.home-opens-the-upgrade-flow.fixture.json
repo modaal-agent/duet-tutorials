@@ -1,0 +1,55 @@
+{
+  "description": "The main level switches tabs, mounts the upgrade flow in its sheet slot on either tab's request and clears it on the flow's Completed or Dismissed, relays the profile tree's sign-out request upward unchanged, and routes a forwarded deep link to the sheet or on down to the profile tab.",
+  "dialect": 2,
+  "feature": "main",
+  "initialState": {
+    "activeTab": {
+      "case": "home"
+    }
+  },
+  "scenario": {
+    "branch": "home-opens-the-upgrade-flow",
+    "source": "src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "home",
+        "value": {
+          "event": {
+            "case": "upgradeRequested"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "activeTab": {
+          "case": "home"
+        },
+        "sheet": {
+          "case": "upgrade"
+        }
+      },
+      "label": "home opens the upgrade flow › the home tab's promo asks for the flow",
+      "line": 53
+    },
+    {
+      "action": {
+        "case": "upgrade",
+        "value": {
+          "event": {
+            "case": "completed"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "activeTab": {
+          "case": "home"
+        }
+      },
+      "label": "home opens the upgrade flow › the flow completes",
+      "line": 60
+    }
+  ]
+}

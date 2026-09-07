@@ -1,0 +1,37 @@
+{
+  "description": "The editor validates the trimmed draft at Save: empty and over-long names never reach the account port; a valid one saves once and climbs to the parent as Saved; Cancel climbs as Closed.",
+  "dialect": 2,
+  "feature": "editname",
+  "initialState": {
+    "draft": "Ann",
+    "isSaving": false
+  },
+  "scenario": {
+    "branch": "cancel-closes",
+    "source": "src-kmp/subtrees/editname/logic/src/jvmTest/kotlin/dev/modaal/foyer/editname/EditNameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "cancelTapped"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "closed"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": "Ann",
+        "isSaving": false
+      },
+      "label": "cancel closes › cancel",
+      "line": 66
+    }
+  ]
+}

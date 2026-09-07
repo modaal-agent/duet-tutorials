@@ -73,8 +73,10 @@ check_tree() {
   done < <(find "$dir" -name Package.swift -not -path '*/.build/*' -print0)
 }
 
-# The workflows select the same floors the trees declare.
-for wf in "$ROOT"/.github/workflows/*.yml; do
+# The workflows select the same floors the trees declare — this repository's
+# and the one a tree carries for the reader to copy (tutorial6-complete on).
+for wf in "$ROOT"/.github/workflows/*.yml "$ROOT"/tutorial*-*/.github/workflows/*.yml; do
+  [[ -f "$wf" ]] || continue
   rel="${wf#"$ROOT"/}"
   while IFS= read -r line; do
     v="$(echo "$line" | sed -nE 's/.*xcode-version:[[:space:]]*"?([0-9.]+)"?.*/\1/p')"

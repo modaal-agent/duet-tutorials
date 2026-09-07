@@ -1,0 +1,104 @@
+{
+  "description": "The preferences step flips one key per toggle, is ready with at least one key on, publishes its readiness on the lateral seam when it changes, and climbs the selection on Continue; Continue with nothing on is inert.",
+  "dialect": 2,
+  "feature": "preferences",
+  "initialState": {
+    "isReady": false,
+    "selected": []
+  },
+  "scenario": {
+    "branch": "toggle-publishes-readiness",
+    "source": "src-kmp/subtrees/preferences/logic/src/jvmTest/kotlin/dev/modaal/foyer/preferences/PreferencesScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "tips"
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "preferences"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isReady": true,
+        "selected": [
+          "tips"
+        ]
+      },
+      "label": "toggle publishes readiness › the tips toggle",
+      "line": 30
+    },
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "digest"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isReady": true,
+        "selected": [
+          "digest",
+          "tips"
+        ]
+      },
+      "label": "toggle publishes readiness › the digest toggle",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "tips"
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "isReady": true,
+        "selected": [
+          "digest"
+        ]
+      },
+      "label": "toggle publishes readiness › tips off again",
+      "line": 36
+    },
+    {
+      "action": {
+        "case": "preferenceToggled",
+        "value": {
+          "key": "digest"
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": false,
+              "step": "preferences"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isReady": false,
+        "selected": []
+      },
+      "label": "toggle publishes readiness › digest off again",
+      "line": 37
+    }
+  ]
+}

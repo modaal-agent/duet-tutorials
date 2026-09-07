@@ -1,0 +1,46 @@
+{
+  "description": "The main level switches tabs, mounts the upgrade flow in its sheet slot on either tab's request and clears it on the flow's Completed or Dismissed, relays the profile tree's sign-out request upward unchanged, and routes a forwarded deep link to the sheet or on down to the profile tab.",
+  "dialect": 2,
+  "feature": "main",
+  "initialState": {
+    "activeTab": {
+      "case": "home"
+    }
+  },
+  "scenario": {
+    "branch": "link-travels-to-the-profile-tab",
+    "source": "src-kmp/subtrees/main/logic/src/jvmTest/kotlin/dev/modaal/foyer/main/MainScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "openLink",
+        "value": {
+          "link": {
+            "case": "profileAccount"
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "forwardLink",
+            "value": {
+              "link": {
+                "case": "profileAccount"
+              }
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "activeTab": {
+          "case": "profile"
+        }
+      },
+      "label": "link travels to the profile tab › the root forwards the account link",
+      "line": 88
+    }
+  ]
+}

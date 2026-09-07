@@ -1,0 +1,104 @@
+// Copyright (c) 2026 Modaal.dev
+// Licensed under the MIT License. See LICENSE file for details.
+
+package dev.modaal.foyer.profile
+
+import dev.modaal.duet.kernel.Effect
+import dev.modaal.duet.test.*
+import dev.modaal.foyer.account.AccountDelegateEvent
+import dev.modaal.foyer.ports.DeepLink
+import dev.modaal.foyer.ports.Entitlement
+import dev.modaal.foyer.ports.Plan
+import kotlin.test.Test
+
+/** The scenario the profile recordings are compiled from. */
+class ProfileScenarioTest {
+  @Test
+  fun profileScenario() {
+    val s =
+      scenario<ProfileState, ProfileAction, ProfileEffectPayload>(
+        feature = "profile",
+        description =
+          "The profile tab mounts the account screen from state, clears it on the " +
+            "child's Closed, refreshes its header on NameChanged, relays " +
+            "SignOutRequested upward, shows the projected entitlement on its plan row, " +
+            "asks the host for the upgrade flow from that row, and mounts the account " +
+            "screen from a forwarded link.",
+        source =
+          "src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/" +
+            "dev/modaal/foyer/profile/ProfileScenarioTest.kt",
+      ) {
+        given(ProfileState(displayName = "Ann"))
+
+        whenAction("the Account row", ProfileAction.AccountTapped)
+        then("the account screen is mounted") { it.child == ProfileRoute.Account }
+        thenEffects("nothing: mounting is the shell's job") { it.isEmpty() }
+
+        branch("account closes") {
+          whenAction("the child closes", ProfileAction.Account(AccountDelegateEvent.Closed))
+          then("the child is dismissed") { it.child == null }
+        }
+
+        branch("name change updates header") {
+          whenAction(
+            "the child reports a new name",
+            ProfileAction.Account(AccountDelegateEvent.NameChanged("Ann B")))
+          then("the header shows it, the child stays") {
+            it.displayName == "Ann B" && it.child == ProfileRoute.Account
+          }
+          thenEffects("nothing: the name stops here") { it.isEmpty() }
+        }
+
+        branch("plan row follows the stream") {
+          whenAction(
+            "the root projects a Premium entitlement",
+            ProfileAction.EntitlementChanged(Entitlement.Premium(Plan.Yearly)))
+          then("the plan row shows it, the child stays") {
+            it.entitlement == Entitlement.Premium(Plan.Yearly) && it.child == ProfileRoute.Account
+          }
+          thenEffects("nothing") { it.isEmpty() }
+        }
+
+        branch("plan row requests the upgrade") {
+          whenAction("the plan row", ProfileAction.PlanTapped)
+          then("state is untouched") { it.child == ProfileRoute.Account }
+          thenEffects("exactly the UpgradeRequested delegate") {
+            it ==
+              effectsOf<ProfileEffectPayload>(
+                Effect.Run(ProfileEffectPayload.NotifyHost(ProfileDelegateEvent.UpgradeRequested)))
+          }
+        }
+
+        branch("link mounts the account screen") {
+          whenAction("the child closes", ProfileAction.Account(AccountDelegateEvent.Closed))
+          then("no child") { it.child == null }
+          whenAction(
+            "the main level forwards the account link",
+            ProfileAction.OpenLink(DeepLink.ProfileAccount))
+          then("the account screen is mounted, as from the row") { it.child == ProfileRoute.Account }
+          thenEffects("nothing") { it.isEmpty() }
+          whenAction("the upgrade link, which is not this tab's", ProfileAction.OpenLink(DeepLink.Upgrade))
+          then("nothing changed") { it.child == ProfileRoute.Account }
+        }
+
+        branch("sign out relays") {
+          whenAction(
+            "the child requests a sign-out",
+            ProfileAction.Account(AccountDelegateEvent.SignOutRequested))
+          then("state is untouched") { it.child == ProfileRoute.Account }
+          thenEffects("the request climbs unchanged") {
+            it ==
+              effectsOf<ProfileEffectPayload>(
+                Effect.Run(ProfileEffectPayload.NotifyHost(ProfileDelegateEvent.SignOutRequested)))
+          }
+        }
+      }
+
+    ScenarioRunner.verifyOrRecord(
+      s,
+      ProfileState.serializer(),
+      ProfileActionSerializer,
+      ProfileEffectPayloadSerializer,
+      ::profileReducer)
+  }
+}

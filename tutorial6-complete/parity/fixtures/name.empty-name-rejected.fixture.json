@@ -1,0 +1,54 @@
+{
+  "description": "The name step validates every edit with the editor's rule, publishes its readiness on the lateral seam when it changes, climbs the trimmed name on Continue, and refuses an empty or over-long draft with the message the editor shows.",
+  "dialect": 2,
+  "feature": "name",
+  "initialState": {
+    "draft": "",
+    "isReady": false
+  },
+  "scenario": {
+    "branch": "empty-name-rejected",
+    "source": "src-kmp/subtrees/name/logic/src/jvmTest/kotlin/dev/modaal/foyer/name/NameScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "continueTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "draft": "",
+        "isReady": false,
+        "validation": "Enter a name."
+      },
+      "label": "empty name rejected › Continue on the empty field",
+      "line": 42
+    },
+    {
+      "action": {
+        "case": "draftChanged",
+        "value": {
+          "text": "A"
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "name"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "draft": "A",
+        "isReady": true
+      },
+      "label": "empty name rejected › a letter is typed",
+      "line": 45
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "description": "The profile tab mounts the account screen from state, clears it on the child's Closed, refreshes its header on NameChanged, relays SignOutRequested upward, shows the projected entitlement on its plan row, asks the host for the upgrade flow from that row, and mounts the account screen from a forwarded link.",
+  "dialect": 2,
+  "feature": "profile",
+  "initialState": {
+    "displayName": "Ann",
+    "entitlement": {
+      "case": "free"
+    }
+  },
+  "scenario": {
+    "branch": "plan-row-follows-the-stream",
+    "source": "src-kmp/subtrees/profile/logic/src/jvmTest/kotlin/dev/modaal/foyer/profile/ProfileScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "accountTapped"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "account"
+        },
+        "displayName": "Ann",
+        "entitlement": {
+          "case": "free"
+        }
+      },
+      "label": "the Account row",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "entitlementChanged",
+        "value": {
+          "entitlement": {
+            "case": "premium",
+            "value": {
+              "plan": {
+                "case": "yearly"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "child": {
+          "case": "account"
+        },
+        "displayName": "Ann",
+        "entitlement": {
+          "case": "premium",
+          "value": {
+            "plan": {
+              "case": "yearly"
+            }
+          }
+        }
+      },
+      "label": "plan row follows the stream › the root projects a Premium entitlement",
+      "line": 53
+    }
+  ]
+}

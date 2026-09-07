@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The window shell; the Compose tree owns every visible style. -->
+  <style name="Theme.Foyer" parent="android:Theme.Material.NoActionBar" />
+</resources>
