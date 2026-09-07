@@ -44,12 +44,16 @@ public final class BridgedStore<State: Equatable, Action>: HostedObservation {
     self.sendAction = send
     self.teardownRuntime = teardown
     collector = Task { [weak self] in
-      for await newState in stateFlow {
+      for await _ in stateFlow {
         guard let self else { return }
-        // The synchronous mirror already published most sent-action states;
-        // equal redeliveries stop here instead of re-firing every sink.
-        if newState != self.state {
-          self.state = newState
+        // A delivery is a wake-up, not the value to apply. The bridged
+        // sequence buffers, so an element can be older than the state the
+        // synchronous `send` already mirrored; re-reading `value` keeps the
+        // mirror at the runtime's current state, never behind it, and equal
+        // redeliveries stop here instead of re-firing every sink.
+        let latest = stateFlow.value
+        if latest != self.state {
+          self.state = latest
         }
       }
     }
