@@ -28,7 +28,8 @@ passes its own checks.
 | `tutorial7-complete` | [Tutorial 7: Theming with Design Tokens](https://docs.modaal.dev/tutorials/duet-07-theming) |
 | `tutorial8-start` | [Tutorial 8: Localizing the App](https://docs.modaal.dev/tutorials/duet-08-localization) |
 | `tutorial8-complete` | [Tutorial 8: Localizing the App](https://docs.modaal.dev/tutorials/duet-08-localization) |
-| `tutorial9-start` | Tutorial 9: Adding Analytics (page not yet published) |
+| `tutorial9-start` | [Tutorial 9: Adding Analytics](https://docs.modaal.dev/tutorials/duet-09-analytics) |
+| `tutorial9-complete` | [Tutorial 9: Adding Analytics](https://docs.modaal.dev/tutorials/duet-09-analytics) |
 
 ## Running a tree's checks
 

@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "duet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/modaal-agent/duet.git",
+      "state" : {
+        "revision" : "69bd3b0d8c578a4a75f078767fbb84375a1975be",
+        "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "duet-services",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/modaal-agent/duet-services.git",
+      "state" : {
+        "revision" : "84b6968a407551a5ed3b6cfb323c8b144ddeb77c",
+        "version" : "0.11.1"
+      }
+    }
+  ],
+  "version" : 2
+}

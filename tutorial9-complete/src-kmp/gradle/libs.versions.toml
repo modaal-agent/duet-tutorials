@@ -1,0 +1,54 @@
+[versions]
+# The Kotlin compiler this repo builds with, the Apple framework included.
+kotlin = "2.4.10"
+# The Duet release the Kotlin modules resolve from the family's Maven host
+# (settings.gradle.kts). The Swift half pins the same release with `exact:` in
+# src-ios/Libraries/FoyerKit/Package.swift; the two move together.
+duet = "0.7.0"
+# The shared-services release (telemetry, theming) from the same host.
+duetServices = "0.11.1"
+kotlinxCoroutines = "1.11.0"
+kotlinxSerialization = "1.11.0"
+# SKIE: the Swift-friendly projection of the Kotlin/Native framework — sealed
+# hierarchies as enums, StateFlow as an async sequence.
+skie = "0.10.14"
+# The family's mock engine: `<Name>Mock` recording spies generated into
+# jvmTest at test compilation; nothing committed.
+mocksProcessor = "0.2.1"
+# KSP 2.x versions independently of the Kotlin compiler.
+ksp = "2.3.11"
+# The Android app, on AGP 9's built-in Kotlin: no separate kotlin-android
+# plugin anywhere in this build.
+agp = "9.3.2"
+composeBom = "2025.06.01"
+activityCompose = "1.10.1"
+# The retained-scope substrate the Activity keeps the app tree on across
+# rotation (Duet's shells-compose pins the same release).
+essenty = "2.5.0"
+coreKtx = "1.15.0"
+
+[libraries]
+duet-kernel = { module = "dev.modaal.duet:kernel", version.ref = "duet" }
+duet-kernel-test = { module = "dev.modaal.duet:kernel-test", version.ref = "duet" }
+duet-shells-compose = { module = "dev.modaal.duet:shells-compose", version.ref = "duet" }
+duet-services-telemetry = { module = "dev.modaal.duet.services:telemetry", version.ref = "duetServices" }
+duet-services-theming = { module = "dev.modaal.duet.services:theming", version.ref = "duetServices" }
+mocks-processor = { module = "dev.modaal:mocks-processor", version.ref = "mocksProcessor" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+essenty-instance-keeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
+android-application = { id = "com.android.application", version.ref = "agp" }

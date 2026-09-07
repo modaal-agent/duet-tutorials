@@ -1,0 +1,47 @@
+{
+  "description": "The onboarding level moves its page forward on each step's Continued, keeps the name and the preferences the steps hand up, completes on the last one, and walks the page back on Back, which is inert on the first page.",
+  "dialect": 2,
+  "feature": "onboarding",
+  "initialState": {
+    "page": "welcome",
+    "preferences": []
+  },
+  "scenario": {
+    "branch": "back-on-welcome-inert",
+    "source": "src-kmp/subtrees/onboarding/logic/src/jvmTest/kotlin/dev/modaal/foyer/onboarding/OnboardingScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "back"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "page": "welcome",
+        "preferences": []
+      },
+      "label": "back on welcome inert › Back on the first page",
+      "line": 73
+    },
+    {
+      "action": {
+        "case": "name",
+        "value": {
+          "event": {
+            "case": "continued",
+            "value": {
+              "name": "stray"
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "page": "welcome",
+        "preferences": []
+      },
+      "label": "back on welcome inert › a name step event while the welcome step is mounted",
+      "line": 76
+    }
+  ]
+}
