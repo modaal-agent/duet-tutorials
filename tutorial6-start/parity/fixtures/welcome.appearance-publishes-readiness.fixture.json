@@ -1,0 +1,36 @@
+{
+  "description": "The welcome step is ready at mount and publishes that readiness on the lateral seam when it appears; Continue climbs to the onboarding level.",
+  "dialect": 2,
+  "feature": "welcome",
+  "initialState": {
+    "isReady": true
+  },
+  "scenario": {
+    "branch": "appearance-publishes-readiness",
+    "source": "src-kmp/subtrees/welcome/logic/src/jvmTest/kotlin/dev/modaal/foyer/welcome/WelcomeScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "appeared"
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "publishReadiness",
+            "value": {
+              "ready": true,
+              "step": "welcome"
+            }
+          }
+        }
+      ],
+      "expectedState": {
+        "isReady": true
+      },
+      "label": "appearance publishes readiness › the step appears",
+      "line": 28
+    }
+  ]
+}

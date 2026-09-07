@@ -1,0 +1,102 @@
+{
+  "chain": "root-onboarding",
+  "description": "The onboarding gate's Completed crosses into the root as Onboarding(event); the root persists the answers through the account port and mounts main.",
+  "dialect": 2,
+  "initialStates": {
+    "onboarding": {
+      "name": "Ann",
+      "page": "preferences",
+      "preferences": []
+    },
+    "root": {
+      "auth": {
+        "case": "signedIn",
+        "value": {
+          "displayName": "ann",
+          "hasOnboarded": false
+        }
+      },
+      "awaitingAuth": false,
+      "entitlement": {
+        "case": "free"
+      },
+      "phase": {
+        "case": "onboarding"
+      }
+    }
+  },
+  "scenario": {
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootChainsTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "preferences",
+        "value": {
+          "event": {
+            "case": "continued",
+            "value": {
+              "preferences": [
+                "digest"
+              ]
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "notifyListener",
+            "value": {
+              "case": "completed",
+              "value": {
+                "name": "Ann",
+                "preferences": [
+                  "digest"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "label": "the last step continues",
+      "line": 306,
+      "linkToNext": true,
+      "node": "onboarding"
+    },
+    {
+      "action": {
+        "case": "onboarding",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "name": "Ann",
+              "preferences": [
+                "digest"
+              ]
+            }
+          }
+        }
+      },
+      "expectedEffects": [
+        {
+          "kind": "run",
+          "payload": {
+            "case": "completeOnboarding",
+            "value": {
+              "name": "Ann",
+              "preferences": [
+                "digest"
+              ]
+            }
+          }
+        }
+      ],
+      "label": "the gate's delegate is the root's action",
+      "line": 317,
+      "node": "root"
+    }
+  ]
+}

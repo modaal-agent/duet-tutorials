@@ -1,0 +1,115 @@
+{
+  "description": "The root mounts one child from its phase. A finished splash goes to the sign-in gate, the onboarding gate or main by the auth snapshot, or waits for it; the sign-in gate's completion signs the session in and picks the onboarding gate for an account that has not onboarded; the onboarding gate's completion persists the answers and mounts main; a sign-out request from under main raises the sign-in gate, and so does a session ending under a signed-in phase; a late splash completion is inert; the entitlement stream writes one value; a deep link is forwarded under main and held until main mounts otherwise.",
+  "dialect": 2,
+  "feature": "root",
+  "initialState": {
+    "auth": {
+      "case": "unknown"
+    },
+    "awaitingAuth": false,
+    "entitlement": {
+      "case": "free"
+    },
+    "phase": {
+      "case": "splash"
+    }
+  },
+  "scenario": {
+    "branch": "sign-out-returns-to-gate",
+    "source": "src-kmp/subtrees/root/logic/src/jvmTest/kotlin/dev/modaal/foyer/root/RootScenarioTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "authChanged",
+        "value": {
+          "auth": {
+            "case": "signedIn",
+            "value": {
+              "displayName": "ann",
+              "hasOnboarded": true
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann",
+            "hasOnboarded": true
+          }
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "splash"
+        }
+      },
+      "label": "sign out returns to gate › the host reports an onboarded session",
+      "line": 113
+    },
+    {
+      "action": {
+        "case": "splash",
+        "value": {
+          "event": {
+            "case": "completed",
+            "value": {
+              "path": {
+                "case": "ceremony"
+              }
+            }
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedIn",
+          "value": {
+            "displayName": "ann",
+            "hasOnboarded": true
+          }
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "main"
+        }
+      },
+      "label": "sign out returns to gate › the splash completes",
+      "line": 114
+    },
+    {
+      "action": {
+        "case": "main",
+        "value": {
+          "event": {
+            "case": "signOutRequested"
+          }
+        }
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "auth": {
+          "case": "signedOut"
+        },
+        "awaitingAuth": false,
+        "entitlement": {
+          "case": "free"
+        },
+        "phase": {
+          "case": "signIn"
+        }
+      },
+      "label": "sign out returns to gate › a sign-out request climbs from under main",
+      "line": 115
+    }
+  ]
+}
