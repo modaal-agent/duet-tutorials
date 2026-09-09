@@ -28,10 +28,9 @@ jobs:
         run: |
           if [ -f tutorial6-complete/parity/mutations.json ]; then present=true; else present=false; fi
           echo "present=$present" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-java@v6
+      - uses: ./.github/actions/setup-jdk
         if: steps.tree.outputs.present == 'true'
         with:
-          distribution: temurin
           java-version: "25"
       - uses: gradle/actions/setup-gradle@v6
         if: steps.tree.outputs.present == 'true'
