@@ -32,9 +32,15 @@ The rules every family repository holds, and this repository's own two.
   failing test, the closing exercise, in a class named `Tutorial<N>Exercise…`;
   `run-tree.sh` filters that class unless `--with-stubs` is given.
 - **Page and trees change together.** A tutorial edit that touches what the
-  reader types lands as one change set: the trees here and the page in the
-  documentation repository. Every fenced block on a page is a verbatim
-  excerpt of the `-complete` tree, checked by `scripts/check-snippets.py`.
+  reader types lands as one change set: the trees here, the page under
+  `docs/` here, and the same page in the documentation repository. Every
+  fenced block on a page is a verbatim excerpt of the `-complete` tree,
+  checked by `scripts/check-snippets.py`.
+- **`docs/` and the documentation site carry the same nine pages.** `docs/`
+  holds them as Markdown; the site serves them as MDX from the documentation
+  repository, which is where the prose is edited. An edit to either one is
+  copied to the other in the same change set, so a reader gets the same page
+  in a checkout and on <https://docs.modaal.dev/tutorials/duet>.
 - **One pins file.** Family and toolchain versions are written in `pins.env`
   and nowhere else by hand; `scripts/check-pins.sh` fails on the first tree
   that disagrees. A family release is one commit: edit `pins.env`, re-pin the
