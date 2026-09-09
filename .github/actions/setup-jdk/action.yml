@@ -1,0 +1,73 @@
+# The JDK every lane builds with, installed once per runner OS and then read
+# from the tool cache.
+#
+# No hosted runner image carries a Java 25, so actions/setup-java resolves it
+# from the Temurin release host and downloads it on every job. The tree matrix
+# is around thirty jobs, so that is thirty downloads of a few hundred MB each
+# per run, and an HTTP 500 from that host fails the lane it hits:
+#
+#   Downloading Java 25.0.4+101.0.LTS (Temurin-Hotspot) from https://github.com/…
+#   Unexpected HTTP response: 500
+#   ##[error]HTTP 500: Unexpected HTTP response: 500
+#
+# The tool cache directory setup-java installs into is cached here, so only a
+# cold cache reaches the network. A warm one also fixes the JDK patch for every
+# job in a run, instead of each job taking whatever the host serves it.
+#
+# The cache holds a patch version, not a range, so `java-version: "25"` keeps
+# resolving to the patch first cached under that key. Bump `JDK` in `pins.env`
+# to move it, or delete the entry under the repository's Actions caches.
+name: Set up the JDK
+description: Install the pinned Temurin JDK, from the runner's tool cache when it is warm.
+
+inputs:
+  java-version:
+    description: >
+      Temurin major version. Passed in from the workflow rather than defaulted
+      here, because scripts/check-pins.sh reads `java-version:` out of
+      .github/workflows/*.yml and holds it to pins.env's JDK.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Restore the JDK
+      id: cached
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ runner.tool_cache }}/Java_temurin-hotspot_jdk
+        key: jdk-temurin-${{ inputs.java-version }}-${{ runner.os }}-${{ runner.arch }}
+
+    - name: Install the JDK
+      id: install
+      uses: actions/setup-java@v6
+      continue-on-error: true
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+
+    # setup-java retries twice on its own, 10 and 16 seconds apart, and the
+    # outages that fail a lane outlast that. The second attempt waits a minute
+    # and brings its own two retries; a version that genuinely does not exist
+    # still fails both, with the same error.
+    - name: Wait out the download failure
+      if: steps.install.outcome == 'failure'
+      shell: bash
+      run: sleep 60
+
+    - name: Install the JDK, second attempt
+      if: steps.install.outcome == 'failure'
+      uses: actions/setup-java@v6
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+
+    # Saved as its own step rather than on job teardown, so a lane that goes
+    # red after this point still leaves the next run warm. Parallel jobs racing
+    # the same key is expected: the first wins and the rest log a warning.
+    - name: Save the JDK
+      if: steps.cached.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ runner.tool_cache }}/Java_temurin-hotspot_jdk
+        key: jdk-temurin-${{ inputs.java-version }}-${{ runner.os }}-${{ runner.arch }}
