@@ -1,6 +1,6 @@
 [versions]
 # The Kotlin compiler this repo builds with.
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 # The Duet release the Kotlin modules resolve from the family's Maven host
 # (settings.gradle.kts).
 duet = "0.7.0"
