@@ -11,10 +11,10 @@ This series teaches Duet, Modaal's cross-platform parity framework for native iO
 > [!NOTE]
 > **The manual setup below is what Modaal automates.** Every tree this tutorial
 > opens and every file it asks you to write is produced by the Duet templates in
-> the [Modaal](https://modaal.dev) new-project wizard, and a coding agent working
-> in Modaal writes the feature, records it and runs the checks for you. This
-> series walks the same ground by hand so you know what the scaffold emits and
-> why: [start a Duet project in the wizard](https://docs.modaal.dev/articles/new-project)
+> [Modaal](https://modaal.dev), and a coding agent working in Modaal writes the
+> feature, records it and runs the checks for you. This series walks the same
+> ground by hand so you know what the scaffold emits and why:
+> [start a Duet project in Modaal](https://docs.modaal.dev/articles/new-project)
 > when you would rather skip the setup.
 
 ## What will you build?
@@ -140,7 +140,7 @@ So every tree runs with no account, no store and no network, and so the feature 
 <details>
 <summary><b>What is the difference between this series and the Modaal templates?</b></summary>
 
-The trees the series opens have the shape the Duet templates in the [Modaal new-project wizard](https://docs.modaal.dev/articles/new-project) emit. The series writes by hand what the scaffold and a coding agent produce for you, so you can read an emitted project and know what each file is for.
+The trees the series opens have the shape the [Duet templates in Modaal](https://docs.modaal.dev/articles/new-project) emit. The series writes by hand what the scaffold and a coding agent produce for you, so you can read an emitted project and know what each file is for.
 
 </details>
 

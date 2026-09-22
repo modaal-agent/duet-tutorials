@@ -9,17 +9,17 @@ In this tutorial you put the splash feature from [Tutorial 1](duet-01-first-feat
 > [!NOTE]
 > **The manual setup below is what Modaal automates.** Every tree this tutorial
 > opens and every file it asks you to write is produced by the Duet templates in
-> the [Modaal](https://modaal.dev) new-project wizard, and a coding agent working
-> in Modaal writes the feature, records it and runs the checks for you. This
-> series walks the same ground by hand so you know what the scaffold emits and
-> why: [start a Duet project in the wizard](https://docs.modaal.dev/articles/new-project)
+> [Modaal](https://modaal.dev), and a coding agent working in Modaal writes the
+> feature, records it and runs the checks for you. This series walks the same
+> ground by hand so you know what the scaffold emits and why:
+> [start a Duet project in Modaal](https://docs.modaal.dev/articles/new-project)
 > when you would rather skip the setup.
 
 ## What will you build?
 
 The Kotlin module you wrote in Tutorial 1 becomes one static framework, `FoyerKit`, built by Gradle and linked by two Swift packages: a test-only package that replays the recordings across the boundary, and the app's consumer package that holds the bridge and the shell. The iOS app is a scene delegate, a host object and two SwiftUI views; the Android app is an Activity, the same host in Kotlin and two composables. Neither app contains a line of feature logic. The splash reveals the app's name over 1.6 seconds, sends `CeremonyFinished` when the reveal ends, and the host swaps in a placeholder that names which path completed it.
 
-This is the most setup-heavy tutorial in the series. The framework assembly is the setup the Modaal wizard automates; here you write it by hand, in three files and one script. Expect about two hours, most of it in the first four steps.
+This is the most setup-heavy tutorial in the series. The framework assembly is the setup the Modaal scaffold automates; here you write it by hand, in three files and one script. Expect about two hours, most of it in the first four steps.
 
 You will have at the end:
 
