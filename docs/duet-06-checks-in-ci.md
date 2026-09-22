@@ -9,10 +9,10 @@ In this tutorial you take the checks you have been running since [Tutorial 1](du
 > [!NOTE]
 > **The manual setup below is what Modaal automates.** Every tree this tutorial
 > opens and every file it asks you to write is produced by the Duet templates in
-> the [Modaal](https://modaal.dev) new-project wizard, and a coding agent working
-> in Modaal writes the feature, records it and runs the checks for you. This
-> series walks the same ground by hand so you know what the scaffold emits and
-> why: [start a Duet project in the wizard](https://docs.modaal.dev/articles/new-project)
+> [Modaal](https://modaal.dev), and a coding agent working in Modaal writes the
+> feature, records it and runs the checks for you. This series walks the same
+> ground by hand so you know what the scaffold emits and why:
+> [start a Duet project in Modaal](https://docs.modaal.dev/articles/new-project)
 > when you would rather skip the setup.
 
 ## What will you build?
