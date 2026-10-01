@@ -734,6 +734,13 @@ Because a shell must observe a reduce before `send` returns, and every delivery 
 </details>
 
 <details>
+<summary><b>Who frees a Kotlin object the Swift shell holds?</b></summary>
+
+The Kotlin runtime does, on a later collection after the last Swift reference is released. That is why `BridgedStore.cancel()` stops the Kotlin store explicitly: a store whose effects are still running is never freed. It is also why the collector task captures `[weak self]`: a reference cycle that runs through both Swift and Kotlin objects is never collected, and `leaks` does not report it. [Kotlin/Native GC and Swift ARC](https://docs.modaal.dev/articles/kotlin-native-gc-swift-arc#why-does-a-cycle-across-the-boundary-leak-and-how-do-you-avoid-it) has the full account.
+
+</details>
+
+<details>
 <summary><b>Why one framework for the whole app rather than one per feature?</b></summary>
 
 A static Kotlin/Native framework embeds the Kotlin runtime. Two frameworks in one app carry it twice and can disagree about shared types at the boundary. The module boundaries between features stay enforced by Gradle; the Apple side sees one binary.
@@ -773,6 +780,7 @@ In the `AppHost` that `RetainedRoot` keeps in the Activity's `InstanceKeeper`. R
 - [The Duet framework repository](https://github.com/modaal-agent/duet) — the `DuetShells` package this page's shell subclasses (`ViewShell`, `StoreHost`, `StateTransitions`), the Kotlin `shells-compose` artifact (`StoreHost`, `RetainedRoot`), and the kernel's `mainImmediateStoreScope` runtime seam.
 - [The duet-tutorials repository](https://github.com/modaal-agent/duet-tutorials) — `tutorial2-start` and `tutorial2-complete`, and the checks CI runs on them.
 - [SKIE](https://skie.touchlab.co/) — the Swift projection of the Kotlin/Native framework: sealed hierarchies as enums, `onEnum(of:)`, and `StateFlow` as an async sequence.
+- [Kotlin/Native GC and Swift ARC](https://docs.modaal.dev/articles/kotlin-native-gc-swift-arc) — what the iPhone app links, the collector's pauses, and who frees what across the boundary this tutorial builds.
 - [Kotlin Multiplatform: build final native binaries](https://kotlinlang.org/docs/multiplatform-build-native-binaries.html) — `binaries.framework`, `export`, and `XCFramework`.
 - [Essenty](https://github.com/arkivanov/Essenty) — `InstanceKeeper`, the retained carrier under `RetainedRoot`.
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) — the project spec format `src-ios/App/xcodegen.yml` uses.
