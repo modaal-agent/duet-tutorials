@@ -18,16 +18,41 @@ toml_value() { grep -E "^$2[[:space:]]*=" "$1" | head -1 | sed -E 's/^[^=]*=[[:s
 
 check_tree() {
   local tree="$1" dir="$ROOT/$1"
+  # The Swift-first track's trees carry the track's own two pins.
+  local tools_key=DUET_TOOLS bundle_key=MOCKS_BUNDLE
+  case "$tree" in
+    tutorial*-swift-*|tutorial*-twins-*) tools_key=DUET_TOOLS_TWINS; bundle_key=MOCKS_BUNDLE_TWINS ;;
+  esac
+  local tools_want="${!tools_key}" bundle_want="${!bundle_key}"
   local ref="$dir/parity/duet-tools.ref"
   if [[ -f "$ref" ]]; then
     local pinned
     pinned="$(grep -vE '^[[:space:]]*(#|$)' "$ref" | head -1 | tr -d '[:space:]')"
-    [[ "$pinned" == "$DUET_TOOLS" ]] || fail "$tree/parity/duet-tools.ref pins $pinned, pins.env says DUET_TOOLS=$DUET_TOOLS"
+    [[ "$pinned" == "$tools_want" ]] || fail "$tree/parity/duet-tools.ref pins $pinned, pins.env says $tools_key=$tools_want"
   else
     fail "$tree has no parity/duet-tools.ref"
   fi
 
-  local catalog="$dir/src-kmp/gradle/libs.versions.toml"
+  # The Gradle root is src-kmp (a Kotlin Multiplatform tree) or src-android
+  # (a twins tree's plain JVM modules); a Swift-only tree has neither.
+  local plane
+  for plane in src-kmp src-android; do
+    if [[ -d "$dir/$plane" ]]; then check_gradle_root "$tree" "$dir/$plane"; fi
+  done
+
+  local manifest="$dir/parity/manifest.yaml"
+  if [[ -f "$manifest" ]] && grep -qE '^[[:space:]]+bundle:' "$manifest"; then
+    local bundle
+    bundle="$(grep -E '^[[:space:]]+bundle:' "$manifest" | head -1 | sed -E 's/.*bundle:[[:space:]]*//; s/[[:space:]]*(#.*)?$//')"
+    [[ "$bundle" == "$bundle_want" ]] || fail "$tree: manifest mocks bundle is $bundle, pins.env $bundle_key=$bundle_want"
+  fi
+
+  check_swift_manifests "$dir"
+}
+
+check_gradle_root() {
+  local tree="$1" gradle="$2"
+  local catalog="$gradle/gradle/libs.versions.toml"
   if [[ -f "$catalog" ]]; then
     local v
     v="$(toml_value "$catalog" duet)";           [[ "$v" == "$DUET" ]]          || fail "$tree: libs.versions.toml duet = $v, pins.env DUET=$DUET"
@@ -36,24 +61,20 @@ check_tree() {
     v="$(toml_value "$catalog" kotlin)";         [[ "$v" == "$KOTLIN" ]]        || fail "$tree: libs.versions.toml kotlin = $v, pins.env KOTLIN=$KOTLIN"
   fi
 
-  local wrapper="$dir/src-kmp/gradle/wrapper/gradle-wrapper.properties"
+  local wrapper="$gradle/gradle/wrapper/gradle-wrapper.properties"
   if [[ -f "$wrapper" ]]; then
     grep -q "gradle-$GRADLE-bin.zip" "$wrapper" || fail "$tree: gradle-wrapper.properties does not name gradle-$GRADLE-bin.zip"
     grep -q "distributionSha256Sum=$GRADLE_SHA256" "$wrapper" || fail "$tree: gradle-wrapper.properties sha256 differs from pins.env GRADLE_SHA256"
   fi
 
-  local daemon="$dir/src-kmp/gradle/gradle-daemon-jvm.properties"
+  local daemon="$gradle/gradle/gradle-daemon-jvm.properties"
   if [[ -f "$daemon" ]]; then
     grep -q "^toolchainVersion=$JDK$" "$daemon" || fail "$tree: gradle-daemon-jvm.properties toolchainVersion is not $JDK"
   fi
+}
 
-  local manifest="$dir/parity/manifest.yaml"
-  if [[ -f "$manifest" ]] && grep -qE '^[[:space:]]+bundle:' "$manifest"; then
-    local bundle
-    bundle="$(grep -E '^[[:space:]]+bundle:' "$manifest" | head -1 | sed -E 's/.*bundle:[[:space:]]*//; s/[[:space:]]*(#.*)?$//')"
-    [[ "$bundle" == "$MOCKS_BUNDLE" ]] || fail "$tree: manifest mocks bundle is $bundle, pins.env MOCKS_BUNDLE=$MOCKS_BUNDLE"
-  fi
-
+check_swift_manifests() {
+  local dir="$1"
   # Every Swift manifest that names a family package pins it `exact:` at the
   # family version. One `.package(...)` per line is the shape the trees use.
   while IFS= read -r -d '' pkg; do
@@ -98,4 +119,4 @@ if [[ $failures -gt 0 ]]; then
   echo "check-pins: $failures disagreement(s) with pins.env" >&2
   exit 1
 fi
-echo "check-pins: every tree agrees with pins.env (DUET=$DUET DUET_TOOLS=$DUET_TOOLS DUET_SERVICES=$DUET_SERVICES)"
+echo "check-pins: every tree agrees with pins.env (DUET=$DUET DUET_TOOLS=$DUET_TOOLS DUET_SERVICES=$DUET_SERVICES; the Swift-first track: DUET_TOOLS_TWINS=$DUET_TOOLS_TWINS MOCKS_BUNDLE_TWINS=$MOCKS_BUNDLE_TWINS)"

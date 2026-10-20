@@ -10,6 +10,7 @@ updates:
   - package-ecosystem: gradle
     directories:
       - "/tutorial*-*/src-kmp"
+      - "/tutorial*-*/src-android"
     schedule:
       interval: weekly
     ignore:
