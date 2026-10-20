@@ -1,0 +1,9 @@
+{
+  "template": "duet-swift-ios",
+  "targets": {},
+  "duet": {
+    "template": "duet-swift-ios",
+    "flavor": "swift",
+    "projectName": "Foyer"
+  }
+}
