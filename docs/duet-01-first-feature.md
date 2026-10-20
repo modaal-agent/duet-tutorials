@@ -699,5 +699,6 @@ The same `commonMain` sources compile to an Apple framework in [Tutorial 2](duet
 ## Read next
 
 - **[Tutorial 2: One Behavior, Two Apps](duet-02-two-apps.md)** — Build the Kotlin core into an Apple framework, then mount the splash in a SwiftUI app and a Compose app.
+- **[Swift Tutorial 1: Your First Feature](duet-swift-01-first-feature.md)** — The same feature written in Swift and recorded from a Swift scenario: the same four recordings, a generated test double, and the Swift replay runner.
 - **[The Duet tutorial series](README.md)** — The nine tutorials, the app they build, the prerequisites and the versions they are verified against.
 - **[Duet: one shared core, two native apps](https://docs.modaal.dev/articles/duet)** — What Duet is, what you get, and the two project cards that scaffold it.

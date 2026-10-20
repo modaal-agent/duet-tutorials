@@ -790,4 +790,5 @@ In the `AppHost` that `RetainedRoot` keeps in the Activity's `InstanceKeeper`. R
 
 - **[Tutorial 1: Your First Feature](duet-01-first-feature.md)** — The splash feature both apps on this page mount: state, actions, effects and the recordings.
 - **[Tutorial 3: Composing Features](duet-03-composing-features.md)** — The root, the sign-in gate and the profile tree: children mounted from state, delegate events received as parent actions, and chain recordings pinning each seam.
+- **[Twins Tutorial 2: One Behavior, Two Cores](duet-twins-02-two-cores.md)** — The same step with two cores: a Swift core in the iPhone app and a Kotlin core in the Android app, checked by one set of recordings.
 - **[The Duet tutorial series](README.md)** — The nine tutorials, the app they build, the prerequisites and the versions they are verified against.

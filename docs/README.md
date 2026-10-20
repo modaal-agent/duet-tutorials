@@ -49,6 +49,15 @@ The backend is on the device: four ports (auth, purchases, items, account) with 
 
 Tutorials 1 to 6 build on each other in order. Tutorials 7, 8 and 9 each start from Tutorial 6's finished tree, so you can take them in any order. Every starting tree from Tutorial 2 onward is the previous tutorial's finished tree plus one deliberately failing test, the closing exercise; Tutorial 1 starts from an empty project.
 
+## The Swift-first track
+
+Two more tutorials build the same splash in another order. Swift Tutorial 1 writes it in Swift and records it from a Swift scenario. Twins Tutorial 2 opens that finished tree, adds a Kotlin twin on a plain JVM module that replays the same recordings, and runs each app on its own core: the iPhone app on the Swift core, the Android app on the Kotlin core. Modaal does not scaffold the twin-core shape yet; both tutorials build their trees by hand with the open `duet` command-line tool.
+
+- **[Swift Tutorial 1: Your First Feature](duet-swift-01-first-feature.md)** — The splash in Swift: `CanonicalSumCodable` types, a pure reducer, a Swift scenario recorded into the same four fixtures as Tutorial 1, a generated test double and the test-clock suite. No UI.
+- **[Twins Tutorial 2: One Behavior, Two Cores](duet-twins-02-two-cores.md)** — A Kotlin twin replaying the Swift recordings, a SwiftUI app on the Swift core and a Compose app on the Kotlin core, both built and run from the command line.
+
+Twins Tutorial 2's starting tree is Swift Tutorial 1's finished tree plus one deliberately failing test, the closing exercise. The [Duet Twins article](https://docs.modaal.dev/articles/duet-twins) describes the architecture.
+
 ## What do you need installed?
 
 - **macOS with Xcode 26.6.** Tutorial 1 uses none of it; Tutorial 2 onward builds the iOS app and the Kotlin/Native framework it consumes.
@@ -59,7 +68,7 @@ Tutorials 1 to 6 build on each other in order. Tutorials 7, 8 and 9 each start f
 
 ## Which versions are the tutorials verified against?
 
-Every tree resolves the same family set, written once in the repository's `pins.env`: Duet 0.7.0, duet-tools 0.24.0 and duet-services 0.11.1, with Kotlin 2.4.10 and Gradle 9.7.1. The repository's CI runs every tree's checks on every push, so a tree that stops passing at those versions fails the build there rather than on your machine. When the family moves, the trees are re-pinned in one change and the repository is tagged for the set they were verified against. Two pages add pins of their own: Tutorial 2 adds SKIE 0.10.14, the Swift projection of the Kotlin/Native framework, and Tutorial 3 adds the KSP mock processor 0.2.1 and the Sourcery mocks bundle 0.6.2.
+Every tree resolves the same family set, written once in the repository's `pins.env`: Duet 0.7.0, duet-tools 0.24.0 and duet-services 0.11.1, with Kotlin 2.4.10 and Gradle 9.7.1. The repository's CI runs every tree's checks on every push, so a tree that stops passing at those versions fails the build there rather than on your machine. When the family moves, the trees are re-pinned in one change and the repository is tagged for the set they were verified against. Two pages add pins of their own: Tutorial 2 adds SKIE 0.10.14, the Swift projection of the Kotlin/Native framework, and Tutorial 3 adds the KSP mock processor 0.2.1 and the Sourcery mocks bundle 0.6.2. The Swift-first track's trees pin duet-tools 0.34.0 and the Sourcery mocks bundle 0.10.2.
 
 ## What does the series teach?
 
