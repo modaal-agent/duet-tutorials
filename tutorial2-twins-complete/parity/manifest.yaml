@@ -1,0 +1,34 @@
+# The feature-parity manifest. Every feature declares its two twins — the
+# Swift implementation the iPhone app runs and the Kotlin implementation the
+# Android app runs — the scenario its fixtures are compiled from (fixtures are
+# build products of `tools/duet record` — never edited by hand), and the
+# fixtures that pin its behavior. `scenario:` names the one writer: the Swift
+# twin's scenario. The Kotlin twin's golden replay and its scenario, which
+# calls `ScenarioRunner.verify`, check the same files and never write them.
+# The `duet` CLI is this file's only parser (grammar: the toolchain's
+# contracts/manifest.md); unknown top-level keys are an error, and the
+# indentation shape is part of the grammar.
+
+# The Swift package that owns the Sources/replay-runner executable, the Swift
+# side of the protocol lane. The Kotlin side is src-android/replay-runner.
+replayRunner: src-ios/Libraries/Replay
+
+features:
+  splash:
+    swift: src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature/SplashFeature.swift
+    kotlin: src-android/subtrees/splash/logic/src/main/kotlin/dev/modaal/foyer/splash/SplashFeature.kt
+    state: SplashState
+    action: SplashAction
+    effectPayload: SplashEffectPayload
+    scenario: src-ios/Subtrees/Splash/SplashFeature/Tests/SplashFeatureTests/SplashScenarioTests.swift
+    fixtures:
+      - splash.ceremony-completes
+      - splash.safety-net-fires
+      - splash.both-paths-notify-twice
+      - splash.repeat-appear-inert
+
+chains:
+
+presentation:
+  waivers: []
+  islands: []

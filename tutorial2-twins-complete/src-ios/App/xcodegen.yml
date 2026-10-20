@@ -1,0 +1,58 @@
+# The iOS app target: a generated project from a hand-edited spec. Adding or
+# removing a source file is a change to the tree and a re-run of
+# `xcodegen generate --spec xcodegen.yml`, never an edit to project.pbxproj.
+name: Foyer
+configs:
+  Debug: debug
+  Release: release
+options:
+  createIntermediateGroups: true
+  developmentLanguage: en
+  knownRegions:
+  - en
+packages:
+  # The splash's shell package; it brings the Swift twin with it. The app
+  # links Swift packages only: no framework is assembled before the build.
+  SplashNode:
+    path: ../Subtrees/Splash/SplashNode
+    group: ''
+targets:
+  Foyer:
+    type: application
+    platform: iOS
+    # Matches the packages' iOS floor.
+    deploymentTarget: '17.0'
+    sources:
+    - Foyer
+    info:
+      path: Foyer/Info.plist
+      properties:
+        CFBundleDisplayName: $(PRODUCT_NAME)
+        CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        # The system launch screen: no storyboard to maintain.
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+            - UISceneConfigurationName: Default Configuration
+              UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UISupportedInterfaceOrientations:
+        - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.modaal.foyer
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: '1'
+        # Complete concurrency checking, matching the package manifests.
+        SWIFT_STRICT_CONCURRENCY: complete
+    dependencies:
+    - package: SplashNode
+      product: SplashNode
+    supportedDestinations:
+    - iOS
+    scheme:
+      management:
+        orderHint: 0

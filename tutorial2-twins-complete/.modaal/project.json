@@ -1,0 +1,27 @@
+{
+  "template": "duet-twins",
+  "xcodegen_root": "src-ios/App",
+  "targets": {
+    "Foyer": {
+      "platform": "iOS",
+      "architecture": "duet",
+      "template": "duet-twins",
+      "pair": "Foyer",
+      "deviceTypes": ["iPhone"],
+      "iphoneOrientations": ["UIInterfaceOrientationPortrait"]
+    },
+    "FoyerAndroid": {
+      "platform": "Android",
+      "architecture": "duet",
+      "template": "duet-twins",
+      "pair": "Foyer",
+      "androidOrientations": ["Portrait"]
+    }
+  },
+  "duet": {
+    "template": "duet-twins",
+    "flavor": "twins",
+    "projectName": "Foyer",
+    "kotlinPackage": "dev.modaal.foyer"
+  }
+}
