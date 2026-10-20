@@ -27,7 +27,7 @@ kotlin {
 }
 
 dependencies {
-  // The feature modules, one line each. Logic stays in src-kmp/subtrees; the
+  // The feature modules, one line each. Logic stays in src-android/subtrees; the
   // screens over it live in this module.
   implementation(project(":subtrees:splash:logic"))
   implementation(libs.duet.kernel)

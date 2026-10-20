@@ -15,7 +15,7 @@ import XCTest
 final class SplashMountBracketTests: XCTestCase {
   func testASecondMountArmsAFreshNet() async {
     let clock = TestClock()
-    let environment = RecordingSplashEnvironment(clock: clock)
+    let environment = SplashEnvironmentMock(clock: clock)
     let first = TestStore(
       initialState: SplashState(),
       reducer: splashReducer,
@@ -41,7 +41,7 @@ final class SplashMountBracketTests: XCTestCase {
     second.expectEffects([.run(.notifyListener(.completed(path: .safetyNet)))])
     await first.finish()
     await second.finish()
-    XCTAssertEqual(environment.notified, [.completed(path: .safetyNet)])
+    XCTAssertEqual(environment.notifyHostArgs, [.completed(path: .safetyNet)])
   }
 }
 

@@ -58,8 +58,9 @@ the second notification.
 
 The timer's temporal contract (fires after the duration and not before,
 exactly once, never after teardown) is a property of the effect handler and
-its clock, not of the reducer. It is tested in `SplashTestStoreTest` on the
-test scheduler's virtual clock; no recording asserts elapsed time.
+its clock, not of the reducer. It is tested on each twin's virtual clock, in
+`SplashTestStoreTests` (Swift, on a `TestClock`) and `SplashTestStoreTest`
+(Kotlin, on the test scheduler); no recording asserts elapsed time.
 
 ## 6. Delegate events
 
@@ -72,8 +73,7 @@ things: the animation completed, or the animation stalled and the net
 completed the splash instead. A host that never distinguishes them ignores
 `path`.
 
-No chain fixture yet: the host is the `root` feature, which Tutorial 3 adds,
-and the hop is pinned there.
+No chain fixture: no feature hosts the splash yet, so there is no hop to pin.
 
 ## 7. Out of feature scope (stays app-side, per platform)
 

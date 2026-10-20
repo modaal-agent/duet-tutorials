@@ -30,7 +30,7 @@
         "isArmed": true
       },
       "label": "the splash appears",
-      "line": 24
+      "line": 23
     },
     {
       "action": {
@@ -56,7 +56,7 @@
         "isArmed": true
       },
       "label": "safety net fires › the armed delay elapses instead",
-      "line": 41
+      "line": 40
     }
   ]
 }

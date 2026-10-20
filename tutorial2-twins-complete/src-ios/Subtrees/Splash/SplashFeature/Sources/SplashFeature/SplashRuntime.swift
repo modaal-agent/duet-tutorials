@@ -4,8 +4,7 @@
 import Duet
 
 // The feature's runtime half: the effect handler, which is the only impure
-// code in the package, and the factory the iPhone shell calls. The Android
-// app builds its store from the Kotlin twin's `makeSplashStore`.
+// code in the package, and the factory a shell calls to build its store.
 
 /// Turns each effect payload into the actions it produces. `.armSafetyNet`
 /// sleeps on the environment's clock and emits `.safetyNetElapsed`; when the
@@ -43,7 +42,7 @@ public func splashEffectHandler(
 
 private let nanosPerMilli: UInt64 = 1_000_000
 
-/// The store the iPhone shell hosts: the reducer and the handler, wired.
+/// The store a shell hosts: the reducer and the handler, wired.
 @MainActor
 public func makeSplashStore(
   environment: SplashEnvironment

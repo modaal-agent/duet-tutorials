@@ -6,9 +6,8 @@ import DuetTesting
 import SplashFeature
 import XCTest
 
-/// The splash's behavior as a Swift scenario: the same Given, the same steps
-/// and the same four branches as the Kotlin twin's scenario, with the same
-/// labels, so both name the same recordings. This scenario is the writer:
+/// The splash's behavior as a scenario: one Given, the steps every branch
+/// shares, and four branches, one per recording. This scenario is the writer:
 /// `tools/duet record` runs it with regeneration on and it writes one fixture
 /// per branch under parity/fixtures/. Every other run checks the committed
 /// fixtures against it.

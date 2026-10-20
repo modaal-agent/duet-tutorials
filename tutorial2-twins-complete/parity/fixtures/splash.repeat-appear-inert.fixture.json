@@ -30,7 +30,7 @@
         "isArmed": true
       },
       "label": "the splash appears",
-      "line": 24
+      "line": 23
     },
     {
       "action": {
@@ -41,7 +41,7 @@
         "isArmed": true
       },
       "label": "repeat appear inert › the splash reports appearing a second time",
-      "line": 56
+      "line": 55
     }
   ]
 }

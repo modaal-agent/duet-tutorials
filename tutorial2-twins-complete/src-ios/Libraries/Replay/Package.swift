@@ -7,8 +7,8 @@ import PackageDescription
 
 // The Swift replay runner: the app's replay registry and the replay-protocol
 // stdio server `tools/duet protocol-run` drives (declared to the CLI by the
-// manifest's `replayRunner:` key). It links each feature's Swift twin and no
-// app code. The Kotlin twin's runner is src-android/replay-runner.
+// manifest's `replayRunner:` key). It links each feature package and no app
+// code.
 let strictConcurrency: [SwiftSetting] = [
   .enableExperimentalFeature("StrictConcurrency")
 ]

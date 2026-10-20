@@ -13,6 +13,10 @@
 # side of the protocol lane. The Kotlin side is src-android/replay-runner.
 replayRunner: src-ios/Libraries/Replay
 
+# Every Kotlin module in this tree is a plain JVM module (src/main, src/test):
+# the iPhone app runs the Swift twin and links no Kotlin.
+kotlinCore: jvm
+
 features:
   splash:
     swift: src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature/SplashFeature.swift
@@ -32,3 +36,33 @@ chains:
 presentation:
   waivers: []
   islands: []
+
+# Generated Swift code, `tools/duet mocks`. One row per generated file; the
+# bundle tag pins the swift-sourcery-templates release that carries the
+# engine, the templates and the mock-templates CLI together. Regeneration is
+# `tools/duet mocks`; the CI gate is `tools/duet mocks --check`, which
+# validates each file's fingerprint block without running the engine. Files
+# under Generated/ are build products: change the protocol and regenerate,
+# never hand-edit. Every Swift test double is generated: a protocol marked
+# `sourcery: CreateMock` gets a `<Name>Mock` in the test target the row names,
+# one row per test target that uses it. The Kotlin twin's test doubles are its
+# own test sources.
+mocks:
+  bundle: 0.10.2
+  generators:
+    splash_mocks:
+      output: src-ios/Subtrees/Splash/SplashFeature/Tests/SplashFeatureTests/Generated/SplashFeatureMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature
+      args:
+        - import=Duet
+        - import=SplashFeature
+    splashnode_mocks:
+      output: src-ios/Subtrees/Splash/SplashNode/Tests/SplashNodeTests/Generated/SplashNodeMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature
+      args:
+        - import=Duet
+        - import=SplashFeature

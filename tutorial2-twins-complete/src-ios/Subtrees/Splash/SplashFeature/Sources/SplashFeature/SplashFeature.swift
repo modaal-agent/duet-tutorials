@@ -3,8 +3,8 @@
 
 import Duet
 
-// The splash feature: state, actions, effect payloads and the reducer, in one
-// file, in the same order as its Kotlin twin. Feature spec:
+// The splash feature in one file: configuration, ids, state, actions,
+// delegate events, effect payloads and the reducer. Feature spec:
 // parity/feature-specs/splash.md. Recordings: parity/fixtures/splash.*.
 
 // MARK: - Configuration

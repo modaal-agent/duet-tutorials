@@ -5,12 +5,12 @@
 
 import PackageDescription
 
-// The Swift twin of the splash: the reducer, its types, the runtime half and
-// their tests. This package is the Swift lane's root — `tools/duet verify`
-// runs `swift test` here on the macOS host, no simulator — and it depends on
-// the Duet framework and nothing else, so the lane resolves the family only.
-// The shell, the builder and the view live in the sibling package
-// ../SplashNode, which the iOS app links.
+// The splash feature: the reducer, its types, the runtime half and their
+// tests. This package is the Swift lane's root — `tools/duet verify` runs
+// `swift test` here on the macOS host, no simulator — and it depends on the
+// Duet framework and nothing else, so the lane resolves the family only.
+// App-side code (the shell, the builder, the view) goes in a sibling package,
+// so nothing here resolves an app dependency.
 //
 // Complete concurrency checking under the Swift 5 language mode, in every
 // target: `Sendable` conformances and actor isolation are compiler-checked.
@@ -30,8 +30,7 @@ let package = Package(
   ],
   dependencies: [
     // The Duet framework, pinned exactly: a newer release is a deliberate
-    // re-pin. The Kotlin twin pins the same release in its Gradle version
-    // catalog; the two move together.
+    // re-pin, made in every manifest of the tree at once.
     .package(url: "https://github.com/modaal-agent/duet.git", exact: "0.7.0")
   ],
   targets: [

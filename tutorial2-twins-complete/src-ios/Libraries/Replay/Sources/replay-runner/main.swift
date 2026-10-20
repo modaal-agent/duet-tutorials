@@ -5,5 +5,5 @@ import DuetReplay
 import ReplayAdapter
 
 // The replay-protocol endpoint: the framework's stdio server over the
-// registry. Nothing in the iPhone app links this executable.
+// registry. No app links this executable.
 ReplayServer.serve(registry: appReplayRegistry)

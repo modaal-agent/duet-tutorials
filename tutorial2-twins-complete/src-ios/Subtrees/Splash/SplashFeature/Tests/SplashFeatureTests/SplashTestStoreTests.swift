@@ -14,7 +14,7 @@ import XCTest
 final class SplashTestStoreTests: XCTestCase {
   func testSafetyNetDoesNotFireBeforeItsDuration() async {
     let clock = TestClock()
-    let environment = RecordingSplashEnvironment(clock: clock)
+    let environment = SplashEnvironmentMock(clock: clock)
     let store = armedStore(environment)
 
     await clock.advance(byNanoseconds: nanos(SplashConfig.safetyNetMillis - 1))
@@ -24,12 +24,12 @@ final class SplashTestStoreTests: XCTestCase {
     // and was never received.
     store.teardown()
     await store.finish()
-    XCTAssertEqual(environment.notified, [])
+    XCTAssertEqual(environment.notifyHostArgs, [])
   }
 
   func testSafetyNetFiresAfterItsDuration() async {
     let clock = TestClock()
-    let environment = RecordingSplashEnvironment(clock: clock)
+    let environment = SplashEnvironmentMock(clock: clock)
     let store = armedStore(environment)
 
     await clock.advance(byNanoseconds: nanos(SplashConfig.safetyNetMillis))
@@ -39,12 +39,12 @@ final class SplashTestStoreTests: XCTestCase {
     await store.receive(.safetyNetElapsed)
     store.expectEffects([notifySafetyNet])
     await store.finish()
-    XCTAssertEqual(environment.notified, [.completed(path: .safetyNet)])
+    XCTAssertEqual(environment.notifyHostArgs, [.completed(path: .safetyNet)])
   }
 
   func testSafetyNetFiresExactlyOnce() async {
     let clock = TestClock()
-    let environment = RecordingSplashEnvironment(clock: clock)
+    let environment = SplashEnvironmentMock(clock: clock)
     let store = armedStore(environment)
 
     // Two advances across the deadline: a periodic wiring would emit a second
@@ -55,19 +55,19 @@ final class SplashTestStoreTests: XCTestCase {
     await store.receive(.safetyNetElapsed)
     store.expectEffects([notifySafetyNet])
     await store.finish()
-    XCTAssertEqual(environment.notified.count, 1)
+    XCTAssertEqual(environment.notifyHostArgs.count, 1)
   }
 
   func testTeardownCancelsTheArmedNet() async {
     let clock = TestClock()
-    let environment = RecordingSplashEnvironment(clock: clock)
+    let environment = SplashEnvironmentMock(clock: clock)
     let store = armedStore(environment)
 
     store.teardown()
     await clock.advance(byNanoseconds: nanos(SplashConfig.safetyNetMillis * 3))
 
     await store.finish()
-    XCTAssertEqual(environment.notified, [])
+    XCTAssertEqual(environment.notifyHostArgs, [])
   }
 
   /// Every test's given: a store whose splash has appeared, so the net is armed.
