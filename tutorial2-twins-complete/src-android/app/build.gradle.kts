@@ -1,5 +1,5 @@
 // The Android app. AGP 9's built-in Kotlin compiles it; the feature modules
-// keep the multiplatform plugin, and this module consumes their JVM variant.
+// are plain kotlin.jvm modules, and this module depends on them directly.
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
