@@ -26,17 +26,24 @@ The rules every family repository holds, and this repository's own two.
   backend behind the same ports a real backend implements, and they ship in
   product sources by design.
 - **A tree passes its own gate.** Every `tutorialN-start` and
-  `tutorialN-complete` directory is a complete repository at that step:
+  `tutorialN-complete` directory, and every `tutorialN-swift-*` and
+  `tutorialN-twins-*` directory, is a complete repository at that step:
   `scripts/run-tree.sh <dir>` is green locally and in CI before it merges.
   A `-start` tree is its predecessor's `-complete` tree plus exactly one
   failing test, the closing exercise, in a class named `Tutorial<N>Exercise…`;
-  `run-tree.sh` filters that class unless `--with-stubs` is given.
+  `run-tree.sh` filters that class unless `--with-stubs` is given. On the
+  Swift-first track, `tutorial2-twins-start` follows
+  `tutorial1-swift-complete`, and each later `tutorialN-twins-start` follows
+  `tutorial(N-1)-twins-complete`. A Kotlin stub is excluded by the Gradle
+  build when `TUTORIAL_SKIP_STUBS=1` is set; a Swift stub opens with
+  `try XCTSkipIf(ProcessInfo.processInfo.environment["TUTORIAL_SKIP_STUBS"] == "1", …)`.
 - **Page and trees change together.** A tutorial edit that touches what the
   reader types lands as one change set: the trees here, the page under
   `docs/` here, and the same page in the documentation repository. Every
   fenced block on a page is a verbatim excerpt of the `-complete` tree,
   checked by `scripts/check-snippets.py`.
-- **`docs/` and the documentation site carry the same nine pages.** `docs/`
+- **`docs/` and the documentation site carry the same eleven pages**, the
+  series' nine and the Swift-first track's two. `docs/`
   holds them as Markdown; the site serves them as MDX from the documentation
   repository, which is where the prose is edited. An edit to either one is
   copied to the other in the same change set, so a reader gets the same page
@@ -45,7 +52,9 @@ The rules every family repository holds, and this repository's own two.
   and nowhere else by hand; `scripts/check-pins.sh` fails on the first tree
   that disagrees. A family release is one commit: edit `pins.env`, re-pin the
   trees, re-record where the release notes say bytes moved, open one pull
-  request, and let the full matrix decide.
+  request, and let the full matrix decide. The Swift-first track's trees
+  read `DUET_TOOLS_TWINS` and `MOCKS_BUNDLE_TWINS` in place of `DUET_TOOLS`
+  and `MOCKS_BUNDLE`.
 - **Every change lands by pull request.** Branch from `main` as
   `s<N>/<topic>`, push, open a pull request. The `trees` workflow runs the
   changed trees (every tree when `pins.env`, `scripts/` or the workflows

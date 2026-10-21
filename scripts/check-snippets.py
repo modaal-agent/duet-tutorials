@@ -2,12 +2,14 @@
 """Every fenced code block on a tutorial page is a verbatim excerpt of that
 tutorial's -complete tree.
 
-    scripts/check-snippets.py <docs-checkout> [N ...]
+    scripts/check-snippets.py <docs-checkout> [N | swift-N | twins-N ...]
 
-<docs-checkout> is a local checkout of the documentation site; the pages are
-`tutorials/duet-0N-*.mdx`, and tutorial N's blocks are checked against
-`tutorialN-complete/` here. With no N given, every page that has a tree is
-checked.
+<docs-checkout> is a local checkout of the documentation site. Tutorial N's
+page is `tutorials/duet-0N-*.mdx`, checked against `tutorialN-complete/`
+here; the Swift-first track's pages carry the track in their name, so
+`tutorials/duet-swift-01-*.mdx` is checked against `tutorial1-swift-complete/`
+and `tutorials/duet-twins-02-*.mdx` against `tutorial2-twins-complete/`. With
+no argument, every page that has a tree is checked.
 
 A block names its file in the fence's info string, either as a bare path
 after the language (```kotlin src-kmp/.../Feature.kt) or as title="path".
@@ -52,11 +54,20 @@ def normalize(text: str) -> str:
     return "\n".join(line.rstrip() for line in text.rstrip("\n").split("\n"))
 
 
-def check(docs: Path, n: int) -> int:
-    pages = sorted((docs / "tutorials").glob(f"duet-{n:02d}-*.mdx"))
-    tree = ROOT / f"tutorial{n}-complete"
+# The page-name prefix and the tree suffix of each track; "" is the series.
+TRACKS = ("", "swift", "twins")
+
+
+def tree_for(n: int, track: str) -> Path:
+    return ROOT / (f"tutorial{n}-{track}-complete" if track else f"tutorial{n}-complete")
+
+
+def check(docs: Path, n: int, track: str = "") -> int:
+    prefix = f"duet-{track}-{n:02d}" if track else f"duet-{n:02d}"
+    pages = sorted((docs / "tutorials").glob(f"{prefix}-*.mdx"))
+    tree = tree_for(n, track)
     if not pages:
-        print(f"check-snippets: no page for tutorial {n} under {docs}/tutorials")
+        print(f"check-snippets: no page {prefix}-*.mdx under {docs}/tutorials")
         return 1
     if not tree.is_dir():
         print(f"check-snippets: {tree.name} is not on the tree")
@@ -87,10 +98,19 @@ def main(argv: list[str]) -> int:
         print(__doc__.strip())
         return 0
     docs = Path(argv[1]).expanduser().resolve()
-    numbers = [int(a) for a in argv[2:]] or [
-        n for n in range(1, 10) if (ROOT / f"tutorial{n}-complete").is_dir()
-    ]
-    total = sum(check(docs, n) for n in numbers)
+    wanted = []
+    for arg in argv[2:]:
+        track, _, number = arg.rpartition("-")
+        if track not in TRACKS:
+            print(f"check-snippets: unknown track in {arg!r} (known: swift, twins)")
+            return 2
+        wanted.append((int(number), track))
+    if not wanted:
+        wanted = [
+            (n, track) for track in TRACKS for n in range(1, 10)
+            if tree_for(n, track).is_dir()
+        ]
+    total = sum(check(docs, n, track) for n, track in wanted)
     return 1 if total else 0
 
 

@@ -1,12 +1,15 @@
 # Duet tutorials
 
-The Duet tutorial series and the step trees it builds. The nine pages are in
-[`docs/`](docs/) as Markdown, and at <https://docs.modaal.dev/tutorials/duet>
-with the site's navigation and search. They build one app, Foyer — a splash,
+The Duet tutorial series and the step trees it builds. The series' nine
+pages and the Swift-first track's two are in [`docs/`](docs/) as Markdown,
+and at <https://docs.modaal.dev/tutorials/duet> with the site's navigation
+and search. They build one app, Foyer — a splash,
 a sign-in gate, an onboarding gate, a home with a paid feature behind an
 entitlement check, an upgrade flow and a profile tree — with the feature
 logic written once in Kotlin and consumed by a SwiftUI app and a Compose
-app. Each tutorial has a `-start` tree (what you open) and a `-complete`
+app. The Swift-first track builds the same splash in Swift, then adds a
+Kotlin twin that replays the same recordings, so the iPhone app runs a Swift
+core and the Android app a Kotlin core. Each tutorial has a `-start` tree (what you open) and a `-complete`
 tree (what you have at the end); every tree is a complete repository that
 resolves the Duet family at the versions in `pins.env` and passes its own
 checks.
@@ -31,6 +34,10 @@ checks.
 | `tutorial8-complete` | [Tutorial 8: Localizing the App](docs/duet-08-localization.md) |
 | `tutorial9-start` | [Tutorial 9: Adding Analytics](docs/duet-09-analytics.md) |
 | `tutorial9-complete` | [Tutorial 9: Adding Analytics](docs/duet-09-analytics.md) |
+| `tutorial1-swift-start` | [Swift Tutorial 1: Your First Feature](docs/duet-swift-01-first-feature.md) |
+| `tutorial1-swift-complete` | [Swift Tutorial 1: Your First Feature](docs/duet-swift-01-first-feature.md) |
+| `tutorial2-twins-start` | [Twins Tutorial 2: One Behavior, Two Cores](docs/duet-twins-02-two-cores.md) |
+| `tutorial2-twins-complete` | [Twins Tutorial 2: One Behavior, Two Cores](docs/duet-twins-02-two-cores.md) |
 
 ## Running a tree's checks
 
@@ -48,8 +55,9 @@ wrapper.
 
 | path | what |
 | --- | --- |
-| `docs/` | the nine tutorial pages as Markdown, and their images |
-| `tutorialN-start/`, `tutorialN-complete/` | the step trees |
+| `docs/` | the eleven tutorial pages as Markdown, and their images |
+| `tutorialN-start/`, `tutorialN-complete/` | the series' step trees |
+| `tutorialN-swift-*/`, `tutorialN-twins-*/` | the Swift-first track's step trees |
 | `pins.env` | the family and toolchain versions every tree is built against |
 | `scripts/check-pins.sh` | every tree agrees with `pins.env` |
 | `scripts/run-tree.sh` | the per-tree gate |

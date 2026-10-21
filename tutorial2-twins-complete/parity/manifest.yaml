@@ -1,0 +1,68 @@
+# The feature-parity manifest. Every feature declares its two twins — the
+# Swift implementation the iPhone app runs and the Kotlin implementation the
+# Android app runs — the scenario its fixtures are compiled from (fixtures are
+# build products of `tools/duet record` — never edited by hand), and the
+# fixtures that pin its behavior. `scenario:` names the one writer: the Swift
+# twin's scenario. The Kotlin twin's golden replay and its scenario, which
+# calls `ScenarioRunner.verify`, check the same files and never write them.
+# The `duet` CLI is this file's only parser (grammar: the toolchain's
+# contracts/manifest.md); unknown top-level keys are an error, and the
+# indentation shape is part of the grammar.
+
+# The Swift package that owns the Sources/replay-runner executable, the Swift
+# side of the protocol lane. The Kotlin side is src-android/replay-runner.
+replayRunner: src-ios/Libraries/Replay
+
+# Every Kotlin module in this tree is a plain JVM module (src/main, src/test):
+# the iPhone app runs the Swift twin and links no Kotlin.
+kotlinCore: jvm
+
+features:
+  splash:
+    swift: src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature/SplashFeature.swift
+    kotlin: src-android/subtrees/splash/logic/src/main/kotlin/dev/modaal/foyer/splash/SplashFeature.kt
+    state: SplashState
+    action: SplashAction
+    effectPayload: SplashEffectPayload
+    scenario: src-ios/Subtrees/Splash/SplashFeature/Tests/SplashFeatureTests/SplashScenarioTests.swift
+    fixtures:
+      - splash.ceremony-completes
+      - splash.safety-net-fires
+      - splash.both-paths-notify-twice
+      - splash.repeat-appear-inert
+
+chains:
+
+presentation:
+  waivers: []
+  islands: []
+
+# Generated Swift code, `tools/duet mocks`. One row per generated file; the
+# bundle tag pins the swift-sourcery-templates release that carries the
+# engine, the templates and the mock-templates CLI together. Regeneration is
+# `tools/duet mocks`; the CI gate is `tools/duet mocks --check`, which
+# validates each file's fingerprint block without running the engine. Files
+# under Generated/ are build products: change the protocol and regenerate,
+# never hand-edit. Every Swift test double is generated: a protocol marked
+# `sourcery: CreateMock` gets a `<Name>Mock` in the test target the row names,
+# one row per test target that uses it. The Kotlin twin's test doubles are its
+# own test sources.
+mocks:
+  bundle: 0.10.2
+  generators:
+    splash_mocks:
+      output: src-ios/Subtrees/Splash/SplashFeature/Tests/SplashFeatureTests/Generated/SplashFeatureMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature
+      args:
+        - import=Duet
+        - import=SplashFeature
+    splashnode_mocks:
+      output: src-ios/Subtrees/Splash/SplashNode/Tests/SplashNodeTests/Generated/SplashNodeMocks.swift
+      template: Mocks.swifttemplate
+      sources:
+        - src-ios/Subtrees/Splash/SplashFeature/Sources/SplashFeature
+      args:
+        - import=Duet
+        - import=SplashFeature

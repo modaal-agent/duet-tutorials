@@ -36,7 +36,9 @@ fi
 
 android=()
 for t in "${selected[@]+"${selected[@]}"}"; do
-  [[ -f "$ROOT/$t/src-kmp/app/build.gradle.kts" ]] && android+=("$t")
+  if [[ -f "$ROOT/$t/src-kmp/app/build.gradle.kts" || -f "$ROOT/$t/src-android/app/build.gradle.kts" ]]; then
+    android+=("$t")
+  fi
 done
 
 python3 - "${#selected[@]}" "${selected[@]+"${selected[@]}"}" -- "${android[@]+"${android[@]}"}" <<'PY'
