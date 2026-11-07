@@ -39,6 +39,13 @@ checks.
 | `tutorial2-twins-start` | [Twins Tutorial 2: One Behavior, Two Cores](docs/duet-twins-02-two-cores.md) |
 | `tutorial2-twins-complete` | [Twins Tutorial 2: One Behavior, Two Cores](docs/duet-twins-02-two-cores.md) |
 
+The duet repository's agent skill,
+[`skills/duet/`](https://github.com/modaal-agent/duet/tree/main/skills/duet),
+teaches a coding agent the idioms these trees show and points it at the
+tree and file for each; install it with `npx skills add modaal-agent/duet`,
+or in Claude Code with `/plugin marketplace add modaal-agent/duet` and
+`/plugin install duet-ios-android@modaal-duet`.
+
 ## Running a tree's checks
 
 ```sh
